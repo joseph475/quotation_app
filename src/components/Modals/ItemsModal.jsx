@@ -44,11 +44,11 @@ class ItemsModal extends Component {
     };
   }
 
-  componentDidMount() {
+  async fetchData() {
     const strgClassifications = fetchLocalStorage('classifications');
 
     if (!strgClassifications) {
-      fetchDataFromAPI('classifications').then(() => {
+      await fetchDataFromAPI('classifications').then(() => {
         this.setState({ loading: false });
       });
     }
@@ -56,7 +56,11 @@ class ItemsModal extends Component {
     this.setState({
       classificationsDropdown: fetchLocalStorage('classifications')
     })
+  }
 
+
+  componentDidMount() {
+    this.fetchData();
   }
 
   handleInputChange = (e) => {
@@ -76,7 +80,7 @@ class ItemsModal extends Component {
           API_ENDPOINTS.storeItems,
           API_ENDPOINTS.getItems,
           this.state.data,
-          'Items'
+          'items'
         )
         this.setState({ ...this.initialData });
         this.props.cb()
@@ -90,7 +94,8 @@ class ItemsModal extends Component {
 
   render({ isOpen, onClose }) {
     const { data, classificationsDropdown } = this.state
-    if (classificationsDropdown && !classificationsDropdown.length) {
+
+    if (!classificationsDropdown) {
       return null;
     }
 

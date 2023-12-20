@@ -1,8 +1,7 @@
 import { h, Component } from 'preact';
 import ReactPaginate from 'react-paginate';
-import axios from 'axios';
-import { API_ENDPOINTS } from '../../config/apiConfig';
 import Search from '../../components/Search';
+import Loader from '../../components/Loader';
 import ItemsModal from '../../components/Modals/ItemsModal';
 import {
   fetchDataFromAPI,
@@ -35,6 +34,22 @@ class ItemMaintenance extends Component {
     this.handlePageChange = this.handlePageChange.bind(this);
   }
 
+  async fetchData(){
+    const itemsStorageData = fetchLocalStorage('items');
+    
+    if (!itemsStorageData) {
+      await fetchDataFromAPI('items').then(() => {
+        this.setState({ loading: false });
+      });
+    }
+
+    this.setState({
+      items: fetchLocalStorage('items'),
+      filteredItems: fetchLocalStorage('items'),
+      loading: false
+    })
+  }
+
   componentDidUpdate() {
     window.addEventListener('storage', () => {
       this.setState({
@@ -44,21 +59,8 @@ class ItemMaintenance extends Component {
     })
   }
 
-  async componentDidMount() {
-    const isReady = fetchLocalStorage('items');
-    if (!isReady) {
-      await fetchDataFromAPI('items').then(() => {
-        this.setState({ loading: false });
-      });
-    }
-
-    const items = fetchLocalStorage('items');
-
-    this.setState({
-      items: items,
-      filteredItems: items,
-      loading: false
-    })
+  componentDidMount() {
+    this.fetchData();
   }
 
   handlePageChange(selectedPage) {
@@ -74,8 +76,6 @@ class ItemMaintenance extends Component {
     });
   };
 
- 
-
   openModal = () => {
     this.setState({ showModal: true });
   };
@@ -85,8 +85,9 @@ class ItemMaintenance extends Component {
   };
 
   render({ }, { filteredItems, loading, searchColumns, itemsPerPage, currentPage, showModal }) {
-    if (loading) {
-      return <div>Fetching Data...</div>;
+    // loading = true;
+    if(loading) {
+      return <Loader />
     }
 
     if (!filteredItems) {
@@ -108,7 +109,7 @@ class ItemMaintenance extends Component {
     ]
 
     return (
-      <div class="ItemMaintenance relative overflow-x-auto shadow-md sm:rounded-lg">
+      <div class="ItemMaintenance relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
         <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between p-4">
           <Search
             data={this.state.items}
@@ -124,7 +125,7 @@ class ItemMaintenance extends Component {
           />
         </div>
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <thead class="text-xs text-gray-700 uppercase bg-slate-200 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               {navigations.map((item) => (
                 <th scope="col" class="px-6 py-3">
@@ -144,7 +145,7 @@ class ItemMaintenance extends Component {
           <tbody>
             {
               currentData.map((i, index) => (
-                <tr key={index} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <tr key={index} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 even:bg-slate-50 hover:bg-gray-50">
                   <td class="px-6 py-4">
                     {i.itemName}
                   </td>

@@ -20,53 +20,53 @@ const Sidebar = () => {
       </button>
 
       <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-        <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+        <div class="h-full px-3 py-4 overflow-y-auto bg-gray-800">
           <ul class="space-y-2 font-medium">
             <li>
-              <a href="/" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <ReceiptPercentIcon className="h-6 w-6 text-blue-500" />
+              <a href="/" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black group">
+                <ReceiptPercentIcon className="h-6 w-6 text-slate-400" />
                 <span class="ms-3">Invoicing</span>
               </a>
             </li>
             <li>
-              <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <ClipboardDocumentCheckIcon className="h-6 w-6 text-blue-500" />
+              <a href="#" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black group">
+                <ClipboardDocumentCheckIcon className="h-6 w-6 text-slate-400" />
                 <span class="ms-3">Quotation</span>
               </a>
             </li>
             <li>
-              <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <ClipboardDocumentListIcon className="h-6 w-6 text-blue-500" />
+              <a href="#" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black group">
+                <ClipboardDocumentListIcon className="h-6 w-6 text-slate-400" />
                 <span class="ms-3">Purchased order</span>
               </a>
             </li>
             <li>
-              <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <FolderArrowDownIcon className="h-6 w-6 text-blue-500" />
+              <a href="#" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black group">
+                <FolderArrowDownIcon className="h-6 w-6 text-slate-400" />
                 <span class="ms-3">Purchased Receiving</span>
               </a>
             </li>
             <li>
-              <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <CurrencyDollarIcon className="h-6 w-6 text-blue-500" />
+              <a href="#" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black group">
+                <CurrencyDollarIcon className="h-6 w-6 text-slate-400" />
                 <span class="ms-3">Expenses Entry</span>
               </a>
             </li>
             <li>
-              <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
-                <CogIcon className="h-6 w-6 text-blue-500" />
+              <button type="button" class="flex items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-gray-100 text-white dark:hover:bg-gray-700 hover:text-black" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+                <CogIcon className="h-6 w-6 text-slate-400" />
                 <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Settings</span>
                 <ChevronDownIcon className="h-6 w-6 text-black-500" />
               </button>
               <ul id="dropdown-example" class="hidden py-2 space-y-2">
                 <li>
-                  <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Customers</a>
+                  <a href="#" class="flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 text-white dark:hover:bg-gray-700 hover:text-black">Customers</a>
                 </li>
                 <li>
-                  <a href="#" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Company</a>
+                  <a href="#" class="flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 text-white dark:hover:bg-gray-700 hover:text-black">Company</a>
                 </li>
                 <li>
-                  <a href="/ItemMaintenance" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Item Maintenance</a>
+                  <a href="/item-maintenance" class="flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 text-white dark:hover:bg-gray-700 hover:text-black">Item Maintenance</a>
                 </li>
               </ul>
             </li>

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { API_ENDPOINTS } from './src/config/apiConfig';
 
 const prefetch = () => {
-  // fetchDataFromAPI('items')
+  fetchDataFromAPI('suppliers')
   fetchDataFromAPI('classifications')
 }
 
