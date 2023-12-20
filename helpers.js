@@ -32,16 +32,16 @@ const fetchData = async (endpoint) => {
   }
 };
 
-const storeData = async (storeEndpoint, fetchEndpoint, data, key) => {
+const storeData = async (key, data, method) => {
   const filteredData = Object.fromEntries(
     Object.entries(data).filter(([key, value]) => value !== null)
   );
 
   try {
-    await axios.post(storeEndpoint, filteredData)
+    await axios[method](API_ENDPOINTS[key], filteredData)
       .then(() => {
-        fetchData(fetchEndpoint).then((response) => {
-          localStorage.setItem(key, JSON.stringify(response));
+        fetchData(API_ENDPOINTS[`${key}s`]).then((response) => {
+          localStorage.setItem(`${key}s`, JSON.stringify(response));
           window.dispatchEvent(new Event("storage"));
         })
         return true;
@@ -52,6 +52,28 @@ const storeData = async (storeEndpoint, fetchEndpoint, data, key) => {
     throw error;
   }
 };
+
+// const storeData = async (storeEndpoint, fetchEndpoint, data, key, method) => {
+//   const filteredData = Object.fromEntries(
+//     Object.entries(data).filter(([key, value]) => value !== null)
+//   );
+
+//   try {
+//     await axios[method](storeEndpoint, filteredData)
+//       .then(() => {
+//         fetchData(fetchEndpoint).then((response) => {
+//           localStorage.setItem(key, JSON.stringify(response));
+//           window.dispatchEvent(new Event("storage"));
+//         })
+//         return true;
+//       });
+
+//   } catch (error) {
+//     console.error('Error storing data:', error.message);
+//     throw error;
+//   }
+// };
+
 
 const fetchLocalStorage = (key) => {
   try {

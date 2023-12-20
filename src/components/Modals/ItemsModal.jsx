@@ -77,10 +77,9 @@ class ItemsModal extends Component {
     if (validateForm(this.state.requiredFields, this.state.data)) {
       try {
         await storeData(
-          API_ENDPOINTS.storeItems,
-          API_ENDPOINTS.getItems,
+          'item',
           this.state.data,
-          'items'
+          'post'
         )
         this.setState({ ...this.initialData });
         this.props.cb()
