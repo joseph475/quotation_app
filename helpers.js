@@ -53,14 +53,12 @@ const deleteData = async (id, key) => {
   try {
     const apiUrl = `${getApiEndpoints(`${key}`)}/${id}`;
     const response = await axios.delete(apiUrl);
-    console.log(response);
-    if (response.data.status) {
+    if (!response.data.status) {
       fetchDataFromAPI(key)
       toast.success('Deleted successfully', {
         position: toast.POSITION.BOTTOM_RIGHT,
       });
     } else {
-      console.log(response.data.message);
       toast.error(response.data.message, {
         position: toast.POSITION.BOTTOM_RIGHT,
       });
