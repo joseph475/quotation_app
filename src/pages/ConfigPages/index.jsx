@@ -6,7 +6,7 @@ import {
 //   fetchDataFromAPI,
 //   fetchLocalStorage
 // } from '../../../helpers';
-import Classifications from '../ConfigPages/Classifications';
+import Classifications from './Classification/index.jsx';
 
 class ConfigPages extends Component {
 
@@ -16,7 +16,6 @@ class ConfigPages extends Component {
     this.initialData = {
       forms: {
         'Classifications': true,
-        'Products': false,
         'Company': false,
       }
     }
@@ -25,7 +24,6 @@ class ConfigPages extends Component {
       ...this.initialData,
       configTabs: [
         'Classifications',
-        'Products',
         'Company'
       ]
     };
@@ -42,7 +40,7 @@ class ConfigPages extends Component {
 
   render({ }, { forms, configTabs }) {
     return (
-      <div class="container mx-auto my-4 grid grid-cols-3 gap-8">
+      <div class="container mx-auto my-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="bg-white rounded-md shadow-md h-fit">
           <h2 class="py-4 px-2 text-xl font-bold border-b">Edit Configs</h2>
           <ul class="max-w-md divide-y divide-gray-200 dark:divide-gray-700 p-4 ">
@@ -66,7 +64,7 @@ class ConfigPages extends Component {
           </ul>
 
         </div>
-        <div class="col-span-2">
+        <div class="lg:col-span-2 col-span-3">
           {forms.Classifications && <Classifications />}
         </div>
       </div>

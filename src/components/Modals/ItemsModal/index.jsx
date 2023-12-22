@@ -1,16 +1,16 @@
 // @ts-nocheck
 import { h, Component } from 'preact';
-import { API_ENDPOINTS } from '../../config/apiConfig';
+import { ButtonDefault } from '../../Button.jsx';
 import {
   storeData,
   validateForm,
   fetchLocalStorage,
   fetchDataFromAPI
-} from '../../../helpers';
-// import axios from 'axios';
-import {
-  PlusCircleIcon
-} from '@heroicons/react/24/outline'
+} from '../../../../helpers';
+import { 
+  tbl_classifications,
+  requiredFields
+} from './data'
 
 class ItemsModal extends Component {
   constructor() {
@@ -34,27 +34,20 @@ class ItemsModal extends Component {
       ...this.initialData,
       showModal: true,
       classificationsDropdown: [],
-      requiredFields: [
-        'itemCode',
-        'itemName',
-        'description',
-        'classification',
-        'product',
-      ]
     };
   }
 
   async fetchData() {
-    const strgClassifications = fetchLocalStorage('classifications');
+    const strgClassifications = fetchLocalStorage(tbl_classifications);
 
     if (!strgClassifications) {
-      await fetchDataFromAPI('classifications').then(() => {
+      await fetchDataFromAPI(tbl_classifications).then(() => {
         this.setState({ loading: false });
       });
     }
 
     this.setState({
-      classificationsDropdown: fetchLocalStorage('classifications')
+      classificationsDropdown: fetchLocalStorage(tbl_classifications)
     })
   }
 
@@ -74,7 +67,7 @@ class ItemsModal extends Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
-    if (validateForm(this.state.requiredFields, this.state.data)) {
+    if (validateForm(requiredFields, this.state.data)) {
       try {
         await storeData(
           'item',
@@ -172,10 +165,7 @@ class ItemsModal extends Component {
                       <input type="number" name="techPrice" value={data.techPrice} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
                     </div>
                   </div>
-                  <button type="submit" onClick={this.handleSubmit} class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    <PlusCircleIcon className="h-8 w-8 pr-2 text-white-500" />
-                    Save
-                  </button>
+                  <ButtonDefault text="Save" handleOnClick={this.handleSubmit}/>
                 </form>
               </div>
             </div>

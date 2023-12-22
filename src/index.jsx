@@ -7,6 +7,7 @@ import { Invoicing } from './pages/Invoicing/index.jsx';
 import ItemMaintenance from './pages/ItemMaintenance/index.jsx';
 import ConfigPages from './pages/ConfigPages/index.jsx';
 import { NotFound } from './pages/_404.jsx';
+import { ToastContainer } from 'react-toastify';
 import './styles/index.css';
 
 import {
@@ -39,6 +40,9 @@ export function App() {
           </Router>
         </main>
       </div>
+      <ToastContainer 
+        autoClose={1000}
+      />
     </div>
   );
 }

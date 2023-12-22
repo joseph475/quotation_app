@@ -1,6 +1,10 @@
 import { h, Component } from 'preact';
 import ReactPaginate from 'react-paginate';
 import Search from '../../components/Search';
+import { 
+  ButtonDefault 
+} 
+from '../../components/Button.jsx';
 import Loader from '../../components/Loader';
 import ItemsModal from '../../components/Modals/ItemsModal';
 import {
@@ -11,6 +15,12 @@ import {
   ArrowsUpDownIcon,
   PencilSquareIcon
 } from '@heroicons/react/24/outline'
+import { 
+  apiEndpointKey,
+  searchColumns,
+  itemsPerPage,
+  navigations
+} from './data'
 
 class ItemMaintenance extends Component {
 
@@ -20,32 +30,26 @@ class ItemMaintenance extends Component {
     this.state = {
       items: [],
       filteredItems: [],
-      itemsPerPage: 12,
       currentPage: 0,
       loading: true,
       showModal: false,
-      searchColumns: [
-        'itemName',
-        'itemCode',
-        'classification'
-      ],
     };
 
     this.handlePageChange = this.handlePageChange.bind(this);
   }
 
   async fetchData(){
-    const itemsStorageData = fetchLocalStorage('items');
+    const itemsStorageData = fetchLocalStorage(apiEndpointKey);
     
     if (!itemsStorageData) {
-      await fetchDataFromAPI('items').then(() => {
+      await fetchDataFromAPI(apiEndpointKey).then(() => {
         this.setState({ loading: false });
       });
     }
 
     this.setState({
-      items: fetchLocalStorage('items'),
-      filteredItems: fetchLocalStorage('items'),
+      items: fetchLocalStorage(apiEndpointKey),
+      filteredItems: fetchLocalStorage(apiEndpointKey),
       loading: false
     })
   }
@@ -53,8 +57,8 @@ class ItemMaintenance extends Component {
   componentDidUpdate() {
     window.addEventListener('storage', () => {
       this.setState({
-        items: fetchLocalStorage('items'),
-        filteredItems: fetchLocalStorage('items')
+        items: fetchLocalStorage(apiEndpointKey),
+        filteredItems: fetchLocalStorage(apiEndpointKey)
       })
     })
   }
@@ -84,7 +88,7 @@ class ItemMaintenance extends Component {
     this.setState({ showModal: false });
   };
 
-  render({ }, { filteredItems, loading, searchColumns, itemsPerPage, currentPage, showModal }) {
+  render({ }, { filteredItems, loading, currentPage, showModal }) {
     // loading = true;
     if(loading) {
       return <Loader />
@@ -98,16 +102,6 @@ class ItemMaintenance extends Component {
     const endIndex = startIndex + itemsPerPage;
     const currentData = filteredItems.slice(startIndex, endIndex);
 
-    const navigations = [
-      'Product name',
-      'Item Code',
-      'Classification',
-      'Cost',
-      'Retail Cost',
-      'Tech Price',
-      'Stock',
-    ]
-
     return (
       <div class="ItemMaintenance relative overflow-x-auto shadow-md sm:rounded-lg bg-white">
         <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between p-4">
@@ -117,7 +111,7 @@ class ItemMaintenance extends Component {
             searchColumns={searchColumns}
             searchPlaceHolder="Search Items Here..."
           />
-          <button onClick={this.openModal} type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add Item</button>
+          <ButtonDefault text="Add Item" handleOnClick={this.openModal}/>
           <ItemsModal
             isOpen={showModal}
             onClose={this.closeModal}

@@ -1,33 +1,29 @@
 // api.js
 import axios from 'axios';
 import { API_ENDPOINTS } from './src/config/apiConfig';
+// import Toast from './src/components/Toast';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const prefetch = () => {
-  fetchDataFromAPI('suppliers')
-  fetchDataFromAPI('classifications')
+  fetchDataFromAPI('supplier')
+  fetchDataFromAPI('classification')
 }
 
 const fetchDataFromAPI = async (key) => {
   try {
-    await axios.get(API_ENDPOINTS[key])
+    await axios.get(API_ENDPOINTS[`${key}s`])
       .then(response => {
-        localStorage.setItem(key, JSON.stringify(response.data));
+        localStorage.setItem(`${key}s`, JSON.stringify(response.data));
+        window.dispatchEvent(new Event("storage"));
       })
       .catch(error => {
         console.error(error);
       });
   } catch (error) {
-    console.error('Error fetching data:', error.message);
-    throw error;
-  }
-};
-
-const fetchData = async (endpoint) => {
-  try {
-    const response = await axios.get(endpoint);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching data:', error.message);
+    toast.error(error.message, {
+      position: toast.POSITION.BOTTOM_RIGHT,
+    });
     throw error;
   }
 };
@@ -40,44 +36,46 @@ const storeData = async (key, data, method) => {
   try {
     await axios[method](API_ENDPOINTS[key], filteredData)
       .then(() => {
-        fetchData(API_ENDPOINTS[`${key}s`]).then((response) => {
-          localStorage.setItem(`${key}s`, JSON.stringify(response));
-          window.dispatchEvent(new Event("storage"));
-        })
+        toast.success('Saved Succesfully', {
+          position: toast.POSITION.BOTTOM_RIGHT,
+        });
+        fetchDataFromAPI(key)
         return true;
       });
 
   } catch (error) {
-    console.error('Error storing data:', error.message);
+    toast.error(error.message, {
+      position: toast.POSITION.BOTTOM_RIGHT,
+    });
     throw error;
   }
 };
 
-// const storeData = async (storeEndpoint, fetchEndpoint, data, key, method) => {
-//   const filteredData = Object.fromEntries(
-//     Object.entries(data).filter(([key, value]) => value !== null)
-//   );
+const deleteData = async (id, key) => {
+  try {
+    const apiUrl = `${API_ENDPOINTS[key]}/${id}`;
+    const response = await axios.delete(apiUrl);
 
-//   try {
-//     await axios[method](storeEndpoint, filteredData)
-//       .then(() => {
-//         fetchData(fetchEndpoint).then((response) => {
-//           localStorage.setItem(key, JSON.stringify(response));
-//           window.dispatchEvent(new Event("storage"));
-//         })
-//         return true;
-//       });
-
-//   } catch (error) {
-//     console.error('Error storing data:', error.message);
-//     throw error;
-//   }
-// };
-
+    if (response.status >= 200 && response.status < 300) {
+      fetchDataFromAPI(key)
+      toast.success('Deleted successfully', {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      });
+    } else {
+      toast.error(response.status, {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      });
+    }
+  } catch (error) {
+    toast.error(error.message, {
+      position: toast.POSITION.BOTTOM_RIGHT,
+    });
+  }
+};
 
 const fetchLocalStorage = (key) => {
   try {
-    const data = localStorage.getItem(key);
+    const data = localStorage.getItem(`${key}s`);
 
     if (data) {
       const parsedData = JSON.parse(data)
@@ -97,20 +95,10 @@ const validateForm = (fields, data) => {
   return isValid;
 };
 
-// const checkStorageReady = (keys) => {
-//   try {
-//     const allExist = keys.every((key) => localStorage.getItem(key) !== null);
-//     return allExist;
-//   } catch (error) {
-//     console.error('Error checking local storage data:', error);
-//     return false;
-//   }
-// }
-
 export {
   prefetch,
-  fetchData,
   storeData,
+  deleteData,
   validateForm,
   fetchLocalStorage,
   fetchDataFromAPI
