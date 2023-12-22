@@ -1,7 +1,5 @@
-// api.js
 import axios from 'axios';
 import { API_ENDPOINTS } from './src/config/apiConfig';
-// import Toast from './src/components/Toast';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -91,7 +89,7 @@ const fetchLocalStorage = (key) => {
 }
 
 const validateForm = (fields, data) => {
-  const isValid = fields.every((i) => data[i].trim() !== '');
+  const isValid = fields.every((i) => (typeof data === 'string' ? data[i].trim() !== '' : data))
   return isValid;
 };
 

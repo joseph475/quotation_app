@@ -29,7 +29,7 @@ class SearchComponent extends Component {
   };
 
   clearSearch = () => {
-    const {data, searchColumns, setSearchResults } = this.props;
+    const {data, setSearchResults } = this.props;
     this.setState({ searchQuery: '' });
     setSearchResults(data);
   };

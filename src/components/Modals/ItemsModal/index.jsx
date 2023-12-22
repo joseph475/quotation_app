@@ -7,7 +7,7 @@ import {
   fetchLocalStorage,
   fetchDataFromAPI
 } from '../../../../helpers';
-import { 
+import {
   tbl_classifications,
   requiredFields
 } from './data'
@@ -18,10 +18,11 @@ class ItemsModal extends Component {
 
     this.initialData = {
       data: {
+        id: null,
         itemCode: '',
         itemName: '',
         description: '',
-        classification: '',
+        class_id: '',
         cost: null,
         retailCost: null,
         techPrice: null,
@@ -51,6 +52,15 @@ class ItemsModal extends Component {
     })
   }
 
+  componentDidUpdate(prevProps) {
+    const { dataForEdit } = this.props
+
+    if (dataForEdit !== prevProps.dataForEdit) {
+      this.setState({
+        data: dataForEdit
+      })
+    }
+  }
 
   componentDidMount() {
     this.fetchData();
@@ -67,12 +77,15 @@ class ItemsModal extends Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
+    
+    const method = this.props.isEditing ? 'put' : 'post';
+
     if (validateForm(requiredFields, this.state.data)) {
       try {
         await storeData(
           'item',
           this.state.data,
-          'post'
+          method
         )
         this.setState({ ...this.initialData });
         this.props.cb()
@@ -103,7 +116,12 @@ class ItemsModal extends Component {
                     Add New Item
                   </h3>
                   {/* <button onclick={this.testSubmit} class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">asd</button> */}
-                  <button type="button" onClick={onClose} class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                  <button type="button" 
+                    onClick={()=>{
+                      this.setState({ ...this.initialData })
+                      onClose()
+                    }}
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                     </svg>
@@ -113,23 +131,42 @@ class ItemsModal extends Component {
                   <div class="grid gap-4 mb-4 grid-cols-4">
                     <div class="col-span-2">
                       <label for="itemCode" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Code</label>
-                      <input type="text" name="itemCode" value={data.itemCode} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" />
+                      <input
+                        type="text"
+                        name="itemCode"
+                        value={data.itemCode}
+                        onChange={this.handleInputChange}
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" />
                     </div>
                     <div class="col-span-2">
                       <label for="itemName" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Name</label>
-                      <input type="text" name="itemName" value={data.itemName} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" />
+                      <input
+                        type="text"
+                        name="itemName"
+                        value={data.itemName}
+                        onChange={this.handleInputChange}
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" />
                     </div>
                     <div class="col-span-2">
                       <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Item Description</label>
-                      <textarea name="description" rows="4" value={data.description} onChange={this.handleInputChange} class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write item description here"></textarea>
+                      <textarea
+                        name="description"
+                        rows="4"
+                        value={data.description}
+                        onChange={this.handleInputChange}
+                        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write item description here"></textarea>
                     </div>
                     <div class="col-span-2">
-                      <label for="classification" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Classification</label>
-                      <select name="classification" value={data.classification} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="">
+                      <label for="class_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Classification</label>
+                      <select
+                        name="class_id"
+                        value={data.class_id}
+                        onChange={this.handleInputChange}
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="">
                         <option value="" disabled>Select Classification</option>
                         {
                           classificationsDropdown.map((item) => (
-                            <option value={item.classId}>{item.name}</option>
+                            <option value={item.id}>{item.name}</option>
                           ))
                         }
                       </select>
@@ -138,7 +175,11 @@ class ItemsModal extends Component {
                   <div class="grid gap-4 mb-4 grid-cols-3">
                     <div class="col-span-2 sm:col-span-1">
                       <label for="product" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product</label>
-                      <select name="product" value={data.product} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <select
+                        name="product"
+                        value={data.product}
+                        onChange={this.handleInputChange}
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                         <option value="" disabled>Select category</option>
                         <option value="item">Item</option>
                         <option value="services">Services</option>
@@ -146,26 +187,42 @@ class ItemsModal extends Component {
                     </div>
                     <div class="col-span-2 sm:col-span-1">
                       <label for="stock" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Stock</label>
-                      <input type="number" name="stock" value={data.stock} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
+                      <input
+                        type="number"
+                        name="stock"
+                        value={data.stock !== null ? data.stock : ''}
+                        onChange={this.handleInputChange}
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
                     </div>
-                    {/* <div class="col-span-2 sm:col-span-1">
-                      <label for="batchNo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">BatchNo</label>
-                      <input type="number" name="batchNo" value={data.batchNo} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
-                    </div> */}
                     <div class="col-span-2 sm:col-span-1">
                       <label for="cost" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Cost</label>
-                      <input type="number" name="cost" value={data.cost} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
+                      <input
+                        type="number"
+                        name="cost"
+                        value={data.cost !== null ? data.cost : ''}
+                        onChange={this.handleInputChange}
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
                     </div>
                     <div class="col-span-2 sm:col-span-1">
                       <label for="retailCost" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Retail Cost</label>
-                      <input type="number" name="retailCost" value={data.retailCost} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
+                      <input
+                        type="number"
+                        name="retailCost"
+                        value={data.retailCost !== null ? data.retailCost : ''}
+                        onChange={this.handleInputChange}
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
                     </div>
                     <div class="col-span-2 sm:col-span-1">
                       <label for="techPrice" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tech Price</label>
-                      <input type="number" name="techPrice" value={data.techPrice} onChange={this.handleInputChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
+                      <input
+                        type="number"
+                        name="techPrice"
+                        value={data.techPrice !== null ? data.techPrice : ''}
+                        onChange={this.handleInputChange}
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0" required="" />
                     </div>
                   </div>
-                  <ButtonDefault text="Save" handleOnClick={this.handleSubmit}/>
+                  <ButtonDefault text="Save" handleOnClick={this.handleSubmit} />
                 </form>
               </div>
             </div>

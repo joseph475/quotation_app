@@ -16,6 +16,7 @@ class ConfigPages extends Component {
     this.initialData = {
       forms: {
         'Classifications': true,
+        'Suppliers': false,
         'Company': false,
       }
     }
@@ -24,6 +25,7 @@ class ConfigPages extends Component {
       ...this.initialData,
       configTabs: [
         'Classifications',
+        'Suppliers',
         'Company'
       ]
     };

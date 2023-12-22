@@ -1,5 +1,6 @@
 import { h, Component, render } from 'preact';
 import Search from '../../../components/Search';
+import PromptModal from '../../../components/Modals/PromptModal';
 import {
   ButtonDefault,
   ButtonNoBorder
@@ -25,7 +26,9 @@ class Classifications extends Component {
     this.state = {
       filteredItems: [],
       editingCell: null,
-      searchQuery: ''
+      searchQuery: '',
+      isModalOpen: false,
+      idForDeletion: null
     };
 
     this.inputRef = null;
@@ -119,8 +122,20 @@ class Classifications extends Component {
   }
 
   handleDelete = (id) => {
-    deleteData(id, apiEndpointKey)
+    this.setState({ 
+      isModalOpen: true,
+      idForDeletion: id
+    })
   }
+
+  handleYes = () => {
+    deleteData(this.state.idForDeletion, apiEndpointKey)
+  };
+
+  handleNo = () => {
+    console.log('User clicked No!');
+    // Add your logic for "No" here
+  };
 
   getCellValue = (editedCell) => {
     return {
@@ -163,7 +178,7 @@ class Classifications extends Component {
     this.fetchData();
   }
 
-  render({ }, { filteredItems }) {
+  render({ }, { filteredItems, isModalOpen }) {
     return (
       <div class="container mx-auto">
         <form class="flex items-center justify-end mb-5 ">
@@ -244,6 +259,11 @@ class Classifications extends Component {
             </tbody>
           </table>
         </div>
+        <PromptModal 
+          isOpen={isModalOpen}
+          onClose={() => this.setState({ isModalOpen: false })}
+          onYes={this.handleYes}
+        />
       </div>
     )
   }

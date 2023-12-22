@@ -14,6 +14,6 @@ export const requiredFields = [
   'itemCode',
   'itemName',
   'description',
-  'classification',
+  'class_id',
   'product',
 ]

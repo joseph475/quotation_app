@@ -15,7 +15,7 @@ export const navigations = [
 export const searchColumns = [
   'itemName',
   'itemCode',
-  'classification'
+  'class_name'
 ]
 
 // export const requiredFields = [

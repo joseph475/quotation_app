@@ -2,18 +2,19 @@ import { h, Component } from 'preact';
 import ReactPaginate from 'react-paginate';
 import Search from '../../components/Search';
 import { 
-  ButtonDefault 
+  ButtonDefault,
+  ButtonNoBorder
 } 
-from '../../components/Button.jsx';
+from '../../components/Button';
 import Loader from '../../components/Loader';
 import ItemsModal from '../../components/Modals/ItemsModal';
 import {
   fetchDataFromAPI,
-  fetchLocalStorage
+  fetchLocalStorage,
+  deleteData
 } from '../../../helpers';
 import {
-  ArrowsUpDownIcon,
-  PencilSquareIcon
+  ArrowsUpDownIcon
 } from '@heroicons/react/24/outline'
 import { 
   apiEndpointKey,
@@ -33,11 +34,46 @@ class ItemMaintenance extends Component {
       currentPage: 0,
       loading: true,
       showModal: false,
+      dataForEdit: null,
+      isEditing: false
     };
 
     this.handlePageChange = this.handlePageChange.bind(this);
   }
 
+  handleDelete = (id) => {
+    deleteData(id, apiEndpointKey)
+  }
+  
+  componentDidMount() {
+    this.fetchData();
+  }
+
+  handlePageChange(selectedPage) {
+    this.setState({
+      currentPage: selectedPage.selected,
+    });
+  }
+
+  setSearchResults = (results) => {
+    this.setState({
+      filteredItems: results,
+      currentPage: 0
+    });
+  };
+
+  openModal = () => {
+    this.setState({ showModal: true });
+  };
+
+  closeModal = () => {
+    this.setState({ 
+      showModal: false,
+      isEditing: false
+    });
+  };
+
+  
   async fetchData(){
     const itemsStorageData = fetchLocalStorage(apiEndpointKey);
     
@@ -62,31 +98,6 @@ class ItemMaintenance extends Component {
       })
     })
   }
-
-  componentDidMount() {
-    this.fetchData();
-  }
-
-  handlePageChange(selectedPage) {
-    this.setState({
-      currentPage: selectedPage.selected,
-    });
-  }
-
-  setSearchResults = (results) => {
-    this.setState({
-      filteredItems: results,
-      currentPage: 0
-    });
-  };
-
-  openModal = () => {
-    this.setState({ showModal: true });
-  };
-
-  closeModal = () => {
-    this.setState({ showModal: false });
-  };
 
   render({ }, { filteredItems, loading, currentPage, showModal }) {
     // loading = true;
@@ -116,6 +127,8 @@ class ItemMaintenance extends Component {
             isOpen={showModal}
             onClose={this.closeModal}
             cb={this.closeModal}
+            dataForEdit={this.state.dataForEdit}
+            isEditing={this.state.isEditing}
           />
         </div>
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
@@ -132,39 +145,53 @@ class ItemMaintenance extends Component {
                 </th>
               ))}
               <th scope="col" class="px-6 py-3">
-                <span class="sr-only">Edit</span>
+                {/* Actions */}
               </th>
             </tr>
           </thead>
           <tbody>
             {
-              currentData.map((i, index) => (
+              currentData.map((item, index) => (
                 <tr key={index} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 even:bg-slate-50 hover:bg-gray-50">
                   <td class="px-6 py-4">
-                    {i.itemName}
+                    {item.itemName}
                   </td>
                   <td class="px-6 py-4">
-                    {i.itemCode}
+                    {item.itemCode}
                   </td>
                   <td class="px-6 py-4">
-                    {i.classification}
+                    {item.class_name}
                   </td>
                   <td class="px-6 py-4">
-                    {i.cost}
+                    {item.cost}
                   </td>
                   <td class="px-6 py-4">
-                    {i.retailCost}
+                    {item.retailCost}
                   </td>
                   <td class="px-6 py-4">
-                    {i.techPrice}
+                    {item.techPrice}
                   </td>
                   <td class="px-6 py-4">
-                    {i.stock}
+                    {item.stock}
                   </td>
-                  <td class="px-6 py-4 text-right">
-                    <a href="#" >
-                      <PencilSquareIcon className="h-6 w-6 text-blue-500 hover:text-blue-800" />
-                    </a>
+                  <td class="px-6 py-4 text-center">
+                    <ButtonNoBorder 
+                      text="Edit" 
+                      handleOnClick={()=>{
+                        this.openModal()
+                        this.setState({
+                          dataForEdit: item,
+                          isEditing: true
+                        })
+                      }}
+                      color="green"
+                      addClass="mr-2"
+                    />
+                    <ButtonNoBorder 
+                      text="Delete" 
+                      handleOnClick={() => this.handleDelete(item.id)}
+                      color="red"
+                    />
                   </td>
                 </tr>
               ))
