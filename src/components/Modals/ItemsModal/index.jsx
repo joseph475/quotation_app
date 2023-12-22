@@ -53,8 +53,8 @@ class ItemsModal extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { dataForEdit, isEditing } = this.props
-    if (this.props.isOpen !== prevProps.isOpen && isEditing) {
+    const { dataForEdit, isEditing, isOpen } = this.props
+    if (isOpen !== prevProps.isOpen && isEditing) {
       this.setState({
         data: dataForEdit
       })

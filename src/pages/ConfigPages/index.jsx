@@ -16,8 +16,8 @@ class ConfigPages extends Component {
 
     this.initialData = {
       forms: {
-        'Classifications': true,
-        'Suppliers': false,
+        'Classifications': false,
+        'Suppliers': true,
         'Company': false,
       }
     }

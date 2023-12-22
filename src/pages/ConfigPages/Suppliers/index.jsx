@@ -32,7 +32,8 @@ class Suppliers extends Component {
       isPromptModalOpen: false,
       idForDeletion: null,
       showModal: false,
-      dataForEdit: null
+      dataForEdit: null,
+      isEditing: false,
     };
 
     this.inputRef = null;
