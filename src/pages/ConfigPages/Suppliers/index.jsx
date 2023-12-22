@@ -1,15 +1,17 @@
 import { h, Component, render } from 'preact';
 import Search from '../../../components/Search';
 import PromptModal from '../../../components/Modals/PromptModal';
+import SuppliersModal from '../../../components/Modals/SuppliersModal';
 import {
   ButtonDefault,
   ButtonNoBorder
 } from '../../../components/Button.jsx';
 import {
-  tbl_classifications,
+  tbl_suppliers,
   excludedColumns,
   requiredFields,
-  searchColumns
+  searchColumns,
+  tableColumns
 } from './data'
 import {
   fetchDataFromAPI,
@@ -19,7 +21,7 @@ import {
   deleteData
 } from '../../../../helpers';
 
-class Classifications extends Component {
+class Suppliers extends Component {
   constructor(props) {
     super(props);
 
@@ -28,12 +30,25 @@ class Classifications extends Component {
       editingCell: null,
       searchQuery: '',
       isPromptModalOpen: false,
-      idForDeletion: null
+      idForDeletion: null,
+      showModal: false,
+      dataForEdit: null
     };
 
     this.inputRef = null;
     this.searchComponentRef = null;
   }
+
+  openModal = () => {
+    this.setState({ showModal: true });
+  };
+
+  closeModal = () => {
+    this.setState({
+      showModal: false,
+      isEditing: false
+    });
+  };
 
   setSearchResults = (results, searchQuery) => {
     this.setState({
@@ -72,13 +87,13 @@ class Classifications extends Component {
 
   onCellUpdate = async () => {
     const { editingCell } = this.state
-    const oldData = fetchLocalStorage(tbl_classifications);
+    const oldData = fetchLocalStorage(tbl_suppliers);
     const newData = this.getCellValue(this.state.editingCell);
 
     if (oldData[editingCell.rowIndex][editingCell.colName] !== newData[editingCell.colName]) {
       try {
         await storeData(
-          tbl_classifications,
+          tbl_suppliers,
           newData,
           'put'
         )
@@ -108,7 +123,7 @@ class Classifications extends Component {
     if (validateForm(requiredFields, data)) {
       try {
         await storeData(
-          tbl_classifications,
+          tbl_suppliers,
           data,
           'post'
         )
@@ -122,14 +137,14 @@ class Classifications extends Component {
   }
 
   handleDelete = (id) => {
-    this.setState({ 
+    this.setState({
       isPromptModalOpen: true,
       idForDeletion: id
     })
   }
 
   handleYes = () => {
-    deleteData(this.state.idForDeletion, tbl_classifications)
+    deleteData(this.state.idForDeletion, tbl_suppliers)
   };
 
   getCellValue = (editedCell) => {
@@ -140,16 +155,16 @@ class Classifications extends Component {
   };
 
   async fetchData() {
-    const strgClassifications = fetchLocalStorage(tbl_classifications);
+    const strgClassifications = fetchLocalStorage(tbl_suppliers);
 
     if (!strgClassifications) {
-      await fetchDataFromAPI(tbl_classifications).then(() => {
+      await fetchDataFromAPI(tbl_suppliers).then(() => {
         this.setState({ loading: false });
       });
     }
 
     this.setState({
-      filteredItems: fetchLocalStorage(tbl_classifications)
+      filteredItems: fetchLocalStorage(tbl_suppliers)
     })
   }
 
@@ -164,7 +179,7 @@ class Classifications extends Component {
 
     window.addEventListener('storage', () => {
       this.setState({
-        filteredItems: fetchLocalStorage(tbl_classifications)
+        filteredItems: fetchLocalStorage(tbl_suppliers)
       })
     })
   }
@@ -173,33 +188,44 @@ class Classifications extends Component {
     this.fetchData();
   }
 
-  render({ }, { filteredItems, isPromptModalOpen }) {
+  render({ }, { filteredItems, isPromptModalOpen, showModal }) {
     return (
       <div class="container mx-auto">
         <form class="flex items-center justify-end mb-5 ">
           <div class="mr-3">
             <Search
-              data={fetchLocalStorage(tbl_classifications)}
+              data={fetchLocalStorage(tbl_suppliers)}
               setSearchResults={this.setSearchResults}
               searchColumns={searchColumns}
-              searchPlaceHolder={`Add ${tbl_classifications} here`}
+              searchPlaceHolder={`Search suppliers here`}
               ref={(ref) => (this.searchComponentRef = ref)}
             />
           </div>
           <ButtonDefault
-            text="Save"
-            handleOnClick={this.handleSubmit}
+            text="Add Supplier"
+            handleOnClick={this.openModal}
+          />
+          <SuppliersModal
+            isOpen={showModal}
+            onClose={this.closeModal}
+            cb={this.closeModal}
+            dataForEdit={this.state.dataForEdit}
+            isEditing={this.state.isEditing}
           />
         </form>
         <div class="overflow-y-auto max-h-[700px] shadow-md">
           <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
             <thead class="text-xs text-gray-700 uppercase bg-slate-200 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" class="px-6 py-3">
-                  <div class="flex items-center">
-                    Classification Name
-                  </div>
-                </th>
+                {
+                  tableColumns.map((item) => (
+                    <th scope="col" class="px-6 py-3">
+                      <div class="flex items-center">
+                        {item}
+                      </div>
+                    </th>
+                  ))
+                }
                 <th scope="col" class="px-6 py-3">
                   {/* Delete */}
                 </th>
@@ -243,6 +269,18 @@ class Classifications extends Component {
                       ))}
                     <td class="text-center">
                       <ButtonNoBorder
+                        text="Edit"
+                        handleOnClick={() => {
+                          this.openModal()
+                          this.setState({
+                            dataForEdit: item,
+                            isEditing: true
+                          })
+                        }}
+                        color="green"
+                        addClass="mr-2"
+                      />
+                      <ButtonNoBorder
                         text="Delete"
                         handleOnClick={() => this.handleDelete(item.id)}
                         color="red"
@@ -254,7 +292,7 @@ class Classifications extends Component {
             </tbody>
           </table>
         </div>
-        <PromptModal 
+        <PromptModal
           isOpen={isPromptModalOpen}
           onClose={() => this.setState({ isPromptModalOpen: false })}
           onYes={this.handleYes}
@@ -264,4 +302,4 @@ class Classifications extends Component {
   }
 }
 
-export default Classifications;
+export default Suppliers;

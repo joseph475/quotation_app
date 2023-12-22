@@ -1,4 +1,4 @@
-export const apiEndpointKey = 'item'
+export const tbl_items = 'item'
 
 export const itemsPerPage = 12
 

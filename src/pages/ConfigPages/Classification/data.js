@@ -1,4 +1,4 @@
-export const apiEndpointKey = 'classification'
+export const tbl_classifications = 'classification'
 
 export const excludedColumns = [
   'id',

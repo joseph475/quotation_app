@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_ENDPOINTS } from './src/config/apiConfig';
+import { getApiEndpoints } from './src/config/apiConfig';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -10,7 +10,7 @@ const prefetch = () => {
 
 const fetchDataFromAPI = async (key) => {
   try {
-    await axios.get(API_ENDPOINTS[`${key}s`])
+    await axios.get(getApiEndpoints(`${key}s`))
       .then(response => {
         localStorage.setItem(`${key}s`, JSON.stringify(response.data));
         window.dispatchEvent(new Event("storage"));
@@ -32,7 +32,7 @@ const storeData = async (key, data, method) => {
   );
 
   try {
-    await axios[method](API_ENDPOINTS[key], filteredData)
+    await axios[method](getApiEndpoints(`${key}`), filteredData)
       .then(() => {
         toast.success('Saved Succesfully', {
           position: toast.POSITION.BOTTOM_RIGHT,
@@ -51,16 +51,17 @@ const storeData = async (key, data, method) => {
 
 const deleteData = async (id, key) => {
   try {
-    const apiUrl = `${API_ENDPOINTS[key]}/${id}`;
+    const apiUrl = `${getApiEndpoints(`${key}`)}/${id}`;
     const response = await axios.delete(apiUrl);
-
-    if (response.status >= 200 && response.status < 300) {
+    console.log(response);
+    if (response.data.status) {
       fetchDataFromAPI(key)
       toast.success('Deleted successfully', {
         position: toast.POSITION.BOTTOM_RIGHT,
       });
     } else {
-      toast.error(response.status, {
+      console.log(response.data.message);
+      toast.error(response.data.message, {
         position: toast.POSITION.BOTTOM_RIGHT,
       });
     }

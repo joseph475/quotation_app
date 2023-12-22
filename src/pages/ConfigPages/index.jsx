@@ -7,6 +7,7 @@ import {
 //   fetchLocalStorage
 // } from '../../../helpers';
 import Classifications from './Classification/index.jsx';
+import Suppliers from './Suppliers/index.jsx';
 
 class ConfigPages extends Component {
 
@@ -42,7 +43,7 @@ class ConfigPages extends Component {
 
   render({ }, { forms, configTabs }) {
     return (
-      <div class="container mx-auto my-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="container mx-auto my-4 grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-md shadow-md h-fit">
           <h2 class="py-4 px-2 text-xl font-bold border-b">Edit Configs</h2>
           <ul class="max-w-md divide-y divide-gray-200 dark:divide-gray-700 p-4 ">
@@ -66,8 +67,9 @@ class ConfigPages extends Component {
           </ul>
 
         </div>
-        <div class="lg:col-span-2 col-span-3">
+        <div class="lg:col-span-3 col-span-4">
           {forms.Classifications && <Classifications />}
+          {forms.Suppliers && <Suppliers />}
         </div>
       </div>
     )

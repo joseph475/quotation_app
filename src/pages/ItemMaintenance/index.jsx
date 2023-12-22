@@ -1,6 +1,7 @@
 import { h, Component } from 'preact';
 import ReactPaginate from 'react-paginate';
 import Search from '../../components/Search';
+import PromptModal from '../../components/Modals/PromptModal';
 import { 
   ButtonDefault,
   ButtonNoBorder
@@ -17,7 +18,7 @@ import {
   ArrowsUpDownIcon
 } from '@heroicons/react/24/outline'
 import { 
-  apiEndpointKey,
+  tbl_items,
   searchColumns,
   itemsPerPage,
   navigations
@@ -35,19 +36,24 @@ class ItemMaintenance extends Component {
       loading: true,
       showModal: false,
       dataForEdit: null,
-      isEditing: false
+      isEditing: false,
+      isPromptModalOpen: false,
+      idForDeletion: null
     };
 
     this.handlePageChange = this.handlePageChange.bind(this);
   }
 
   handleDelete = (id) => {
-    deleteData(id, apiEndpointKey)
+    this.setState({ 
+      isPromptModalOpen: true,
+      idForDeletion: id
+    })
   }
-  
-  componentDidMount() {
-    this.fetchData();
-  }
+
+  handleYes = () => {
+    deleteData(this.state.idForDeletion, tbl_items)
+  };
 
   handlePageChange(selectedPage) {
     this.setState({
@@ -69,23 +75,23 @@ class ItemMaintenance extends Component {
   closeModal = () => {
     this.setState({ 
       showModal: false,
-      isEditing: false
+      isEditing: false,
+      // dataForEdit: null
     });
   };
 
-  
   async fetchData(){
-    const itemsStorageData = fetchLocalStorage(apiEndpointKey);
+    const itemsStorageData = fetchLocalStorage(tbl_items);
     
     if (!itemsStorageData) {
-      await fetchDataFromAPI(apiEndpointKey).then(() => {
+      await fetchDataFromAPI(tbl_items).then(() => {
         this.setState({ loading: false });
       });
     }
 
     this.setState({
-      items: fetchLocalStorage(apiEndpointKey),
-      filteredItems: fetchLocalStorage(apiEndpointKey),
+      items: fetchLocalStorage(tbl_items),
+      filteredItems: fetchLocalStorage(tbl_items),
       loading: false
     })
   }
@@ -93,13 +99,17 @@ class ItemMaintenance extends Component {
   componentDidUpdate() {
     window.addEventListener('storage', () => {
       this.setState({
-        items: fetchLocalStorage(apiEndpointKey),
-        filteredItems: fetchLocalStorage(apiEndpointKey)
+        items: fetchLocalStorage(tbl_items),
+        filteredItems: fetchLocalStorage(tbl_items)
       })
     })
   }
+  
+  componentDidMount() {
+    this.fetchData();
+  }
 
-  render({ }, { filteredItems, loading, currentPage, showModal }) {
+  render({ }, { filteredItems, loading, currentPage, showModal, isPromptModalOpen }) {
     // loading = true;
     if(loading) {
       return <Loader />
@@ -206,6 +216,12 @@ class ItemMaintenance extends Component {
           onPageChange={this.handlePageChange}
           containerClassName="pagination"
           activeClassName="active"
+        />
+
+         <PromptModal 
+          isOpen={isPromptModalOpen}
+          onClose={() => this.setState({ isPromptModalOpen: false })}
+          onYes={this.handleYes}
         />
       </div>
     );
