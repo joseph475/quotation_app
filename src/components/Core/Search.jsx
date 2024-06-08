@@ -38,7 +38,7 @@ class SearchComponent extends Component {
     return (
       <div class="bg-white dark:bg-gray-900">
         <label for="table-search" class="sr-only">Search</label>
-        <div class="relative mt-1">
+        <div class="relative">
           <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
             <MagnifyingGlassIcon className="h-4 w-4 text-blue-500" />
           </div>
@@ -49,7 +49,7 @@ class SearchComponent extends Component {
             onInput={this.handleSearchChange}
             placeholder={searchPlaceHolder}
             ref={(input) => (this.searchInput = input)}
-            class="block pt-2 ps-10 text-sm text-gray-900 border
+            class="block py-[9px] ps-10 text-sm text-gray-900 border
              border-gray-300 rounded-lg bg-gray-50
               focus:ring-blue-500 focus:border-blue-500 sm:w-[300px] w-[220px]"
           />

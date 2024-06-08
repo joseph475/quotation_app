@@ -1,9 +1,8 @@
-export const tbl_classifications = 'classification'
-
-export const excludedColumns = [
-  'id',
-  'created_at',
-  'updated_at'
+export const displayedColumns = [
+  {
+    'column': 'name',
+    'value': 'Classification Name'
+  }
 ]
 
 export const searchColumns = [

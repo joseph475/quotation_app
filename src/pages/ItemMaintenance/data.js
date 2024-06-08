@@ -1,8 +1,6 @@
-export const tbl_items = 'item'
-
 export const itemsPerPage = 12
 
-export const navigations = [
+export const tableColumns = [
   'Product name',
   'Item Code',
   'Classification',

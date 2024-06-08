@@ -1,16 +1,15 @@
 // @ts-nocheck
 import { h, Component } from 'preact';
-import { ButtonDefault } from '../../Button.jsx';
+import { ButtonDefault } from '../../../components';
 import {
   storeData,
   validateForm,
   fetchLocalStorage,
   fetchDataFromAPI
-} from '../../../../helpers';
+} from '../../../../helpers.js';
 import {
-  tbl_classifications,
   requiredFields
-} from './data'
+} from './data.js'
 
 class SuppliersModal extends Component {
   constructor() {
@@ -33,20 +32,6 @@ class SuppliersModal extends Component {
     };
   }
 
-  // async fetchData() {
-  //   const strgClassifications = fetchLocalStorage(tbl_classifications);
-
-  //   if (!strgClassifications) {
-  //     await fetchDataFromAPI(tbl_classifications).then(() => {
-  //       this.setState({ loading: false });
-  //     });
-  //   }
-
-  //   this.setState({
-  //     classificationsDropdown: fetchLocalStorage(tbl_classifications)
-  //   })
-  // }
-
   handleInputChange = (e) => {
     this.setState((prevState) => ({
       data: {
@@ -58,7 +43,6 @@ class SuppliersModal extends Component {
 
   handleSubmit = async (event) => {
     event.preventDefault();
-    
     const method = this.props.isEditing ? 'put' : 'post';
 
     if (validateForm(requiredFields, this.state.data)) {
@@ -88,13 +72,19 @@ class SuppliersModal extends Component {
     }
   }
 
-  // componentDidMount() {
-  //   this.fetchData();
-  // }
+  componentDidMount() {
+    // this.fetchData();
+    const { dataForEdit, isEditing } = this.props
+    if (isEditing) {
+      this.setState({
+        data: dataForEdit
+      })
+    }
+  }
 
   render({ isOpen, onClose }) {
     const { data } = this.state
-
+    
     return (
       <>
         {this.state.showModal && (

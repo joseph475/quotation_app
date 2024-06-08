@@ -1,4 +1,4 @@
-export const tbl_classifications = 'classification'
+// export const tbl_classifications = 'classification'
 
 export const requiredFields = [
   'itemCode',

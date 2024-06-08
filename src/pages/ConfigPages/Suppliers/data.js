@@ -1,5 +1,3 @@
-export const tbl_suppliers = 'supplier'
-
 export const tableColumns = [
   'Supplier Id',
   'Supplier Name',

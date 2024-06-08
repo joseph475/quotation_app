@@ -1,16 +1,16 @@
 // @ts-nocheck
 import { h, Component } from 'preact';
-import { ButtonDefault } from '../../Button.jsx';
+import { ButtonDefault } from '../../../components';
 import {
   storeData,
   validateForm,
   fetchLocalStorage,
   fetchDataFromAPI
-} from '../../../../helpers';
+} from '../../../../helpers.js';
 import {
-  tbl_classifications,
   requiredFields
-} from './data'
+} from './data.js'
+import { tbl_classifications } from '../../../helpers/constants.js';
 
 class ItemsModal extends Component {
   constructor() {
@@ -63,6 +63,12 @@ class ItemsModal extends Component {
 
   componentDidMount() {
     this.fetchData();
+    const { dataForEdit, isEditing } = this.props
+    if (isEditing) {
+      this.setState({
+        data: dataForEdit
+      })
+    }
   }
 
   handleInputChange = (e) => {

@@ -8,7 +8,7 @@ import Tooltip from './Tooltip';
 const Header = () => (
   <header class="bg-white p-4 border-b border-gray-200 sm:ml-64">
     <div class="flex justify-between items-center">
-      <div class="text-2xl font-bold">Logo</div>
+      <div class="text-2xl font-bold ml-[60px] sm:ml-0">Logo</div>
       <div class="flex">
         <Tooltip content="Configs" position="right">
           <a href="/configs">

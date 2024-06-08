@@ -1,25 +1,24 @@
+// @ts-nocheck
 import { h, Component, render } from 'preact';
-import Search from '../../../components/Search';
-import PromptModal from '../../../components/Modals/PromptModal';
-import SuppliersModal from '../../../components/Modals/SuppliersModal';
 import {
   ButtonDefault,
-  ButtonNoBorder
-} from '../../../components/Button.jsx';
-import {
-  tbl_suppliers,
-  excludedColumns,
-  requiredFields,
-  searchColumns,
-  tableColumns
-} from './data'
+  Search,
+  PromptModal
+} from '@components';
 import {
   fetchDataFromAPI,
   fetchLocalStorage,
   storeData,
   validateForm,
-  deleteData
-} from '../../../../helpers';
+  deleteData,
+  tbl_suppliers
+} from '@helpers';
+import {
+  excludedColumns,
+  requiredFields,
+  searchColumns,
+  tableColumns
+} from './data'
 
 class Suppliers extends Component {
   constructor(props) {
@@ -34,14 +33,26 @@ class Suppliers extends Component {
       showModal: false,
       dataForEdit: null,
       isEditing: false,
+
+      SuppliersModal: null,
     };
 
     this.inputRef = null;
     this.searchComponentRef = null;
   }
 
+  loadSuppliersModal = async () => {
+    const module = await import('../../../components/Modals/AddSuppliersModal');
+    const SuppliersModal = module.default;
+
+    this.setState({
+      SuppliersModal,
+    });
+  };
+
   openModal = () => {
     this.setState({ showModal: true });
+    this.loadSuppliersModal()
   };
 
   closeModal = () => {
@@ -189,7 +200,7 @@ class Suppliers extends Component {
     this.fetchData();
   }
 
-  render({ }, { filteredItems, isPromptModalOpen, showModal }) {
+  render({ }, { filteredItems, isPromptModalOpen, showModal, SuppliersModal }) {
     return (
       <div class="container mx-auto">
         <form class="flex items-center justify-end mb-5 ">
@@ -206,13 +217,15 @@ class Suppliers extends Component {
             text="Add Supplier"
             handleOnClick={this.openModal}
           />
-          <SuppliersModal
-            isOpen={showModal}
-            onClose={this.closeModal}
-            cb={this.closeModal}
-            dataForEdit={this.state.dataForEdit}
-            isEditing={this.state.isEditing}
-          />
+          {SuppliersModal &&
+            <SuppliersModal
+              isOpen={showModal}
+              onClose={this.closeModal}
+              cb={this.closeModal}
+              dataForEdit={this.state.dataForEdit}
+              isEditing={this.state.isEditing}
+            />
+          }
         </form>
         <div class="overflow-y-auto max-h-[700px] shadow-md">
           <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
@@ -269,7 +282,7 @@ class Suppliers extends Component {
                         </td>
                       ))}
                     <td class="text-center">
-                      <ButtonNoBorder
+                      <ButtonDefault
                         text="Edit"
                         handleOnClick={() => {
                           this.openModal()
@@ -278,13 +291,12 @@ class Suppliers extends Component {
                             isEditing: true
                           })
                         }}
-                        color="green"
-                        addClass="mr-2"
+                        className="text-green-600 mr-2"
                       />
-                      <ButtonNoBorder
+                      <ButtonDefault
                         text="Delete"
                         handleOnClick={() => this.handleDelete(item.id)}
-                        color="red"
+                        className="text-red-600"
                       />
                     </td>
                   </tr>

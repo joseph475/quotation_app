@@ -1,27 +1,25 @@
+// @ts-nocheck
 import { h, Component } from 'preact';
 import ReactPaginate from 'react-paginate';
-import Search from '../../components/Search';
-import PromptModal from '../../components/Modals/PromptModal';
-import { 
+import {
   ButtonDefault,
-  ButtonNoBorder
-} 
-from '../../components/Button';
-import Loader from '../../components/Loader';
-import ItemsModal from '../../components/Modals/ItemsModal';
+  Search,
+  PromptModal,
+  Loader
+} from '@components';
 import {
   fetchDataFromAPI,
   fetchLocalStorage,
-  deleteData
-} from '../../../helpers';
+  deleteData,
+  tbl_items
+} from '@helpers';
 import {
   ArrowsUpDownIcon
 } from '@heroicons/react/24/outline'
-import { 
-  tbl_items,
+import {
   searchColumns,
   itemsPerPage,
-  navigations
+  tableColumns
 } from './data'
 
 class ItemMaintenance extends Component {
@@ -38,14 +36,26 @@ class ItemMaintenance extends Component {
       dataForEdit: null,
       isEditing: false,
       isPromptModalOpen: false,
-      idForDeletion: null
+      idForDeletion: null,
+
+      // LazyLoadedComponents
+      ItemsModal: null
     };
 
     this.handlePageChange = this.handlePageChange.bind(this);
   }
 
+  loadItemsModal = async () => {
+    const module = await import('../../components/Modals/AddItemsModal');
+    const ItemsModal = module.default;
+
+    this.setState({
+      ItemsModal,
+    });
+  };
+
   handleDelete = (id) => {
-    this.setState({ 
+    this.setState({
       isPromptModalOpen: true,
       idForDeletion: id
     })
@@ -70,19 +80,19 @@ class ItemMaintenance extends Component {
 
   openModal = () => {
     this.setState({ showModal: true });
+    this.loadItemsModal()
   };
 
   closeModal = () => {
-    this.setState({ 
+    this.setState({
       showModal: false,
       isEditing: false,
-      // dataForEdit: null
     });
   };
 
-  async fetchData(){
+  async fetchData() {
     const itemsStorageData = fetchLocalStorage(tbl_items);
-    
+
     if (!itemsStorageData) {
       await fetchDataFromAPI(tbl_items).then(() => {
         this.setState({ loading: false });
@@ -104,14 +114,14 @@ class ItemMaintenance extends Component {
       })
     })
   }
-  
+
   componentDidMount() {
     this.fetchData();
   }
 
-  render({ }, { filteredItems, loading, currentPage, showModal, isPromptModalOpen }) {
+  render({ }, { filteredItems, loading, currentPage, showModal, isPromptModalOpen, ItemsModal }) {
     // loading = true;
-    if(loading) {
+    if (loading) {
       return <Loader />
     }
 
@@ -132,19 +142,21 @@ class ItemMaintenance extends Component {
             searchColumns={searchColumns}
             searchPlaceHolder="Search Items Here..."
           />
-          <ButtonDefault text="Add Item" handleOnClick={this.openModal}/>
-          <ItemsModal
-            isOpen={showModal}
-            onClose={this.closeModal}
-            cb={this.closeModal}
-            dataForEdit={this.state.dataForEdit}
-            isEditing={this.state.isEditing}
-          />
+          <ButtonDefault text="Add Item" handleOnClick={this.openModal} />
+          {ItemsModal &&
+            <ItemsModal
+              isOpen={showModal}
+              onClose={this.closeModal}
+              cb={this.closeModal}
+              dataForEdit={this.state.dataForEdit}
+              isEditing={this.state.isEditing}
+            />
+          }
         </div>
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
           <thead class="text-xs text-gray-700 uppercase bg-slate-200 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              {navigations.map((item) => (
+              {tableColumns.map((item) => (
                 <th scope="col" class="px-6 py-3">
                   <div class="flex items-center">
                     {item}
@@ -185,22 +197,21 @@ class ItemMaintenance extends Component {
                     {item.stock}
                   </td>
                   <td class="px-6 py-4 text-center">
-                    <ButtonNoBorder 
-                      text="Edit" 
-                      handleOnClick={()=>{
+                    <ButtonDefault
+                      text="Edit"
+                      handleOnClick={() => {
                         this.openModal()
                         this.setState({
                           dataForEdit: item,
                           isEditing: true
                         })
                       }}
-                      color="green"
-                      addClass="mr-2"
+                      className="mr-2 text-green-600"
                     />
-                    <ButtonNoBorder 
-                      text="Delete" 
+                    <ButtonDefault
+                      text="Delete"
                       handleOnClick={() => this.handleDelete(item.id)}
-                      color="red"
+                      className="text-red-600"
                     />
                   </td>
                 </tr>
@@ -218,7 +229,7 @@ class ItemMaintenance extends Component {
           activeClassName="active"
         />
 
-         <PromptModal 
+        <PromptModal
           isOpen={isPromptModalOpen}
           onClose={() => this.setState({ isPromptModalOpen: false })}
           onYes={this.handleYes}

@@ -1,10 +1,10 @@
+// @ts-nocheck
 import axios from 'axios';
-import { getApiEndpoints } from './src/helpers/apiConfig';
+import { getApiEndpoints } from '@helpers';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const prefetch = () => {
-  
   fetchDataFromAPI('supplier')
   fetchDataFromAPI('classification')
 }
@@ -54,7 +54,8 @@ const deleteData = async (id, key) => {
   try {
     const apiUrl = `${getApiEndpoints(`${key}`)}/${id}`;
     const response = await axios.delete(apiUrl);
-    if (!response.data.status) {
+    
+    if (response.data.status !== false) {
       fetchDataFromAPI(key)
       toast.success('Deleted successfully', {
         position: toast.POSITION.BOTTOM_RIGHT,
