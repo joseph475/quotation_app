@@ -40,7 +40,7 @@ export function App() {
         </main>
       </div>
       <ToastContainer 
-        autoClose={2000}
+        autoClose={1500}
         pauseOnHover
       />
     </div>

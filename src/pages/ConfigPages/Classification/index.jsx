@@ -1,11 +1,13 @@
 // @ts-nocheck
 import { h, Component, render } from 'preact';
+import ReactPaginate from 'react-paginate';
 import {
   ButtonDefault,
   AddEditSingleItemModal,
   Search,
   PromptModal,
-  Table
+  Table,
+  Loader
 } from '@components';
 import {
   fetchDataFromAPI,
@@ -18,7 +20,8 @@ import {
 import {
   requiredFields,
   searchColumns,
-  displayedColumns
+  displayedColumns,
+  itemsPerPage
 } from './data'
 
 class Classifications extends Component {
@@ -26,37 +29,27 @@ class Classifications extends Component {
     super(props);
 
     this.state = {
+      rawData: [],
       filteredItems: [],
-      searchQuery: '',
+      currentPage: 0,
+      loading: true,
       isPromptModalOpen: false,
       isAddEditSingleItemModalOpen: false,
       idForDeletion: null,
       itemForUpdate: null,
     };
 
-    this.inputRef = null;
-    this.searchComponentRef = null;
+    this.handlePageChange = this.handlePageChange.bind(this);
   }
 
-  setSearchResults = (results, searchQuery) => {
+  setSearchResults = (results) => {
     this.setState({
       filteredItems: results,
-      searchQuery
+      currentPage: 0
     });
   };
 
-  handleClearSearch = () => {
-    if (this.searchComponentRef) {
-      this.searchComponentRef.clearSearch();
-    }
-  };
-
-  handleSubmit = async () => {
-    const { searchQuery } = this.state;
-    const data = {
-      'name': searchQuery
-    }
-
+  handleSubmit = async (data) => {
     if (validateForm(requiredFields, data)) {
       try {
         await storeData(
@@ -64,7 +57,10 @@ class Classifications extends Component {
           data,
           'post'
         )
-        this.handleClearSearch()
+        this.setState({ 
+          isAddEditSingleItemModalOpen: false,
+          itemForUpdate: null
+        })
       } catch (error) {
         console.error('Error:', error.message);
       }
@@ -89,6 +85,7 @@ class Classifications extends Component {
 
   handleYes = () => {
     deleteData(this.state.idForDeletion, tbl_classifications)
+    this.fetchData()
   };
 
   onUpdate = async (newData) => {
@@ -107,25 +104,33 @@ class Classifications extends Component {
     })
   }
 
+  handlePageChange = (selectedPage) => {
+    this.setState({
+      currentPage: selectedPage.selected,
+    });
+  }
+
   async fetchData() {
     const strgClassifications = fetchLocalStorage(tbl_classifications);
 
     if (!strgClassifications) {
       await fetchDataFromAPI(tbl_classifications).then(() => {
-        this.setState({ loading: false });
+        this.setState({
+          loading: false 
+        });
       });
     }
-
     this.setState({
-      filteredItems: fetchLocalStorage(tbl_classifications)
+      rawData: fetchLocalStorage(tbl_classifications),
+      filteredItems: fetchLocalStorage(tbl_classifications),
+      loading: false
     })
   }
 
+
   componentDidUpdate() {
     window.addEventListener('storage', () => {
-      this.setState({
-        filteredItems: fetchLocalStorage(tbl_classifications)
-      })
+      this.fetchData()
     })
   }
 
@@ -133,37 +138,74 @@ class Classifications extends Component {
     this.fetchData();
   }
 
-  render({ }, { filteredItems, isPromptModalOpen, isAddEditSingleItemModalOpen, itemForUpdate }) {
+  render({ }, { 
+      filteredItems, 
+      isPromptModalOpen, 
+      isAddEditSingleItemModalOpen, 
+      itemForUpdate, 
+      currentPage,
+      loading,
+      rawData
+    }) {
+
+    if (loading) {
+      return <Loader />
+    }
+
+    if (rawData && !rawData.length) {
+      return null;
+    }
+
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentData = filteredItems.slice(startIndex, endIndex);
+
     return (
       <div>
-        <form class="flex items-center justify-end mb-5">
+        <form class="flex items-center justify-between mb-5">
           <div class="mr-3 flex-grow md:flex-grow-0">
             <Search
-              data={fetchLocalStorage(tbl_classifications)}
+              data={rawData}
               setSearchResults={this.setSearchResults}
               searchColumns={searchColumns}
               searchPlaceHolder={`Search here`}
-              ref={(ref) => (this.searchComponentRef = ref)}
             />
           </div>
           <ButtonDefault
-            text="Save"
-            handleOnClick={this.handleSubmit}
+            text="Add"
+            handleOnClick={() => {
+              this.setState({ 
+                isAddEditSingleItemModalOpen: true
+              })
+            }}
           />
         </form>
         <div class="overflow-y-auto max-h-[700px] shadow-md">
           <Table 
-            data={filteredItems}
+            data={currentData}
             displayedColumns={displayedColumns}
             onDelete={this.handleDelete}
             onUpdate={this.handleUpdate}
           />
         </div>
+
         <PromptModal 
           isOpen={isPromptModalOpen}
           onClose={() => this.setState({ isPromptModalOpen: false })}
           onYes={this.handleYes}
         />
+        
+        <ReactPaginate
+          pageCount={Math.ceil(filteredItems.length / itemsPerPage)}
+          pageRangeDisplayed={5}
+          marginPagesDisplayed={2}
+          onPageChange={this.handlePageChange}
+          previousLabel="<"
+          nextLabel=">"
+          containerClassName="pagination"
+          activeClassName="active"
+        />
+
         {isAddEditSingleItemModalOpen && 
          <AddEditSingleItemModal
             isOpen={isAddEditSingleItemModalOpen}
@@ -175,7 +217,8 @@ class Classifications extends Component {
             }}
             dataForEdit={itemForUpdate}
             onUpdate={this.onUpdate}
-            modalTitle="Update Supplier"
+            onAdd={this.handleSubmit}
+            modalTitle={itemForUpdate ? 'Update Category' : 'Add New Item Category'}
          />
         }
       </div>

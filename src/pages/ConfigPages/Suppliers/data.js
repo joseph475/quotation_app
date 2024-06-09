@@ -1,15 +1,22 @@
-export const tableColumns = [
-  'Supplier Id',
-  'Supplier Name',
-  'Mobile No.',
-  'Terms Appy',
-]
+export const itemsPerPage = 12
 
-export const excludedColumns = [
-  'id',
-  'address',
-  'created_at',
-  'updated_at'
+export const displayedColumns = [
+  {
+    'column': 'supplierId',
+    'value': 'Supplier ID'
+  },
+  {
+    'column': 'supplierName',
+    'value': 'Name'
+  },
+  {
+    'column': 'address',
+    'value': 'Address'
+  },
+  {
+    'column': 'mobileNo',
+    'value': 'Contact'
+  },
 ]
 
 export const searchColumns = [

@@ -219,7 +219,7 @@ class ItemMaintenance extends Component {
             }
           </tbody>
         </table>
-
+        
         <ReactPaginate
           pageCount={Math.ceil(filteredItems.length / itemsPerPage)}
           pageRangeDisplayed={5}

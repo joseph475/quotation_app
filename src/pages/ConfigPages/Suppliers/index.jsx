@@ -3,7 +3,9 @@ import { h, Component, render } from 'preact';
 import {
   ButtonDefault,
   Search,
-  PromptModal
+  PromptModal,
+  Loader,
+  Table
 } from '@components';
 import {
   fetchDataFromAPI,
@@ -14,10 +16,10 @@ import {
   tbl_suppliers
 } from '@helpers';
 import {
-  excludedColumns,
   requiredFields,
   searchColumns,
-  tableColumns
+  itemsPerPage,
+  displayedColumns 
 } from './data'
 
 class Suppliers extends Component {
@@ -25,59 +27,44 @@ class Suppliers extends Component {
     super(props);
 
     this.state = {
+      rawData: [],
       filteredItems: [],
-      editingCell: null,
-      searchQuery: '',
+      currentPage: 0,
+      loading: true,
       isPromptModalOpen: false,
       idForDeletion: null,
       showModal: false,
-      dataForEdit: null,
-      isEditing: false,
-
+      itemForUpdate: null,
       SuppliersModal: null,
     };
 
-    this.inputRef = null;
-    this.searchComponentRef = null;
   }
 
-  loadSuppliersModal = async () => {
-    const module = await import('../../../components/Modals/AddSuppliersModal');
-    const SuppliersModal = module.default;
+  // loadSuppliersModal = async () => {
+  //   const module = await import('../../../components/Modals/AddSuppliersModal');
+  //   const SuppliersModal = module.default;
 
-    this.setState({
-      SuppliersModal,
-    });
-  };
+  //   this.setState({
+  //     SuppliersModal,
+  //   });
+  // };
 
-  openModal = () => {
-    this.setState({ showModal: true });
-    this.loadSuppliersModal()
-  };
+  // openModal = () => {
+  //   this.setState({ showModal: true });
+  //   this.loadSuppliersModal()
+  // };
 
-  closeModal = () => {
-    this.setState({
-      showModal: false,
-      isEditing: false
-    });
-  };
+  // closeModal = () => {
+  //   this.setState({
+  //     showModal: false,
+  //     isEditing: false
+  //   });
+  // };
 
   setSearchResults = (results, searchQuery) => {
     this.setState({
       filteredItems: results,
       searchQuery
-    });
-  };
-
-  handleClearSearch = () => {
-    if (this.searchComponentRef) {
-      this.searchComponentRef.clearSearch();
-    }
-  };
-
-  handleDoubleClick = (rowIndex, colName) => {
-    this.setState({
-      editingCell: { rowIndex, colName },
     });
   };
 
@@ -95,35 +82,6 @@ class Suppliers extends Component {
     this.setState({
       filteredItems: newData,
     });
-  };
-
-  onCellUpdate = async () => {
-    const { editingCell } = this.state
-    const oldData = fetchLocalStorage(tbl_suppliers);
-    const newData = this.getCellValue(this.state.editingCell);
-
-    if (oldData[editingCell.rowIndex][editingCell.colName] !== newData[editingCell.colName]) {
-      try {
-        await storeData(
-          tbl_suppliers,
-          newData,
-          'put'
-        )
-      } catch (error) {
-        console.error('Error:', error.message);
-      }
-    }
-
-    this.setState({
-      editingCell: null
-    });
-  }
-
-  handleEnterKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      this.onCellUpdate()
-      this.handleClearSearch()
-    }
   };
 
   handleSubmit = async () => {
@@ -148,6 +106,13 @@ class Suppliers extends Component {
     }
   }
 
+  handleUpdate = (item) => {
+    this.setState({ 
+      // isAddEditSingleItemModalOpen: true,
+      itemForUpdate: item
+    })
+  }
+
   handleDelete = (id) => {
     this.setState({
       isPromptModalOpen: true,
@@ -157,13 +122,6 @@ class Suppliers extends Component {
 
   handleYes = () => {
     deleteData(this.state.idForDeletion, tbl_suppliers)
-  };
-
-  getCellValue = (editedCell) => {
-    return {
-      'id': this.state.filteredItems[editedCell.rowIndex]['id'],
-      [editedCell.colName]: this.state.filteredItems[editedCell.rowIndex][editedCell.colName],
-    }
   };
 
   async fetchData() {
@@ -176,23 +134,15 @@ class Suppliers extends Component {
     }
 
     this.setState({
-      filteredItems: fetchLocalStorage(tbl_suppliers)
+      rawData: fetchLocalStorage(tbl_suppliers),
+      filteredItems: fetchLocalStorage(tbl_suppliers),
+      loading: false
     })
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      this.state.editingCell &&
-      this.state.editingCell !== prevState.editingCell &&
-      this.inputRef
-    ) {
-      this.inputRef.focus();
-    }
-
+  componentDidUpdate() {
     window.addEventListener('storage', () => {
-      this.setState({
-        filteredItems: fetchLocalStorage(tbl_suppliers)
-      })
+      this.fetchData()
     })
   }
 
@@ -200,24 +150,41 @@ class Suppliers extends Component {
     this.fetchData();
   }
 
-  render({ }, { filteredItems, isPromptModalOpen, showModal, SuppliersModal }) {
+  render({ }, { 
+    filteredItems, 
+    isPromptModalOpen, 
+    rawData, 
+    currentPage, 
+    loading 
+  }) {
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentData = filteredItems.slice(startIndex, endIndex);
+
+    if (loading) {
+      return <Loader />
+    }
+
+    if (rawData && !rawData.length) {
+      return null;
+    }
+
     return (
       <div>
         <form class="flex items-center justify-end mb-5 ">
           <div class="mr-3">
             <Search
-              data={fetchLocalStorage(tbl_suppliers)}
+              data={rawData}
               setSearchResults={this.setSearchResults}
               searchColumns={searchColumns}
-              searchPlaceHolder={`Search suppliers here`}
-              ref={(ref) => (this.searchComponentRef = ref)}
+              searchPlaceHolder={`Search here`}
             />
           </div>
           <ButtonDefault
             text="Add Supplier"
             handleOnClick={this.openModal}
           />
-          {SuppliersModal &&
+          {/* {SuppliersModal &&
             <SuppliersModal
               isOpen={showModal}
               onClose={this.closeModal}
@@ -225,10 +192,10 @@ class Suppliers extends Component {
               dataForEdit={this.state.dataForEdit}
               isEditing={this.state.isEditing}
             />
-          }
+          } */}
         </form>
         <div class="overflow-y-auto max-h-[700px] shadow-md">
-          <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
+          {/* <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
             <thead class="text-xs text-gray-700 uppercase bg-slate-200 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 {
@@ -240,9 +207,7 @@ class Suppliers extends Component {
                     </th>
                   ))
                 }
-                <th scope="col" class="px-6 py-3">
-                  {/* Delete */}
-                </th>
+                <th scope="col" class="px-6 py-3"></th>
               </tr>
             </thead>
             <tbody>
@@ -303,7 +268,13 @@ class Suppliers extends Component {
                 ))
               }
             </tbody>
-          </table>
+          </table> */}
+          <Table 
+            data={currentData}
+            displayedColumns={displayedColumns}
+            onDelete={this.handleDelete}
+            onUpdate={this.handleUpdate}
+          />
         </div>
         <PromptModal
           isOpen={isPromptModalOpen}

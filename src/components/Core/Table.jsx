@@ -43,7 +43,7 @@ class Table extends Component {
                     </td>
                   ))}
                 {(onUpdate || onDelete) && (
-                  <td class="text-center py-[5px] border lg:w-[25%] w-auto">
+                  <td class="text-center py-[5px] border md:w-[25%] w-auto">
                     {onUpdate && (
                       <ButtonIcon
                         type="update"

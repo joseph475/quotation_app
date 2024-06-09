@@ -16,7 +16,7 @@ class ConfigPages extends Component {
 
     this.initialData = {
       forms: {
-        'Classifications': true,
+        'Categories': true,
         'Suppliers': false,
         'Company': false,
       }
@@ -25,7 +25,7 @@ class ConfigPages extends Component {
     this.state = {
       ...this.initialData,
       configTabs: [
-        'Classifications',
+        'Categories',
         'Suppliers',
         'Company'
       ]
@@ -67,7 +67,7 @@ class ConfigPages extends Component {
           </ul>
         </div>
         <div class="col-span-4 lg:col-span-3">
-          {forms.Classifications && <Classifications />}
+          {forms.Categories && <Classifications />}
           {forms.Suppliers && <Suppliers />}
         </div>
       </div>

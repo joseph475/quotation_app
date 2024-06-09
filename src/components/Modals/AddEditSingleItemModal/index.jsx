@@ -38,13 +38,13 @@ class AddEditSingleItemModal extends Component {
     }));
   };
 
-  render({ isOpen, onClose, onUpdate, modalTitle }) {
+  render({ isOpen, onClose, onUpdate, onAdd, modalTitle, dataForEdit }) {
     const { data } = this.state
     return (
-      <div class={`fixed inset-0 ${isOpen ? 'block' : 'hidden'}`}>
+      <div class={`fixed inset-0 ${isOpen ? 'block' : 'hidden'} z-50`}>
         <div class="absolute inset-0 bg-black opacity-50"></div>
         <div class="absolute inset-0 flex items-center justify-center overflow-auto">
-          <div class="bg-white rounded-md shadow-md w-full max-w-xl">
+          <div class="bg-white rounded-md shadow-md sm:w-full w-[90%] max-w-xl">
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
               {modalTitle}
@@ -73,8 +73,8 @@ class AddEditSingleItemModal extends Component {
               </div>
               <div className="flex flex-row-reverse">
                 <ButtonDefault text="Save"
-                  handleOnClick={() => { 
-                    onUpdate(data)
+                  handleOnClick={() => {
+                    dataForEdit ? onUpdate(data) : onAdd(data)
                   }} 
                 />
               </div>

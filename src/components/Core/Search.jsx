@@ -49,9 +49,9 @@ class SearchComponent extends Component {
             onInput={this.handleSearchChange}
             placeholder={searchPlaceHolder}
             ref={(input) => (this.searchInput = input)}
-            class="block py-[9px] ps-10 text-sm text-gray-900 border
+            class="block py-[9px] ps-10 text-sm text-gray-900 border w-full sm:w-auto
              border-gray-300 rounded-lg bg-gray-50
-              focus:ring-blue-500 focus:border-blue-500 sm:w-[300px] w-[220px]"
+              focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
       </div>

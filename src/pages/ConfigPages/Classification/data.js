@@ -1,3 +1,5 @@
+export const itemsPerPage = 12
+
 export const displayedColumns = [
   {
     'column': 'name',
