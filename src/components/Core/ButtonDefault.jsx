@@ -1,9 +1,9 @@
 import { h, Component } from 'preact';
 
-const ButtonDefault = ({ text, handleOnClick, className = "" }) => (
+const ButtonDefault = ({ text, handleOnClick, style }) => (
   <button type="button" onClick={handleOnClick}
     className={`
-      ${className}
+      ${style}
       text-white 
       bg-blue-700 
       hover:bg-blue-800 

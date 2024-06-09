@@ -2,7 +2,7 @@
 import { h, Component, render } from 'preact';
 import {
   ButtonDefault,
-  ButtonIcon,
+  AddEditSingleItemModal,
   Search,
   PromptModal,
   Table
@@ -29,7 +29,9 @@ class Classifications extends Component {
       filteredItems: [],
       searchQuery: '',
       isPromptModalOpen: false,
-      idForDeletion: null
+      isAddEditSingleItemModalOpen: false,
+      idForDeletion: null,
+      itemForUpdate: null,
     };
 
     this.inputRef = null;
@@ -78,9 +80,32 @@ class Classifications extends Component {
     })
   }
 
+  handleUpdate = (item) => {
+    this.setState({ 
+      isAddEditSingleItemModalOpen: true,
+      itemForUpdate: item
+    })
+  }
+
   handleYes = () => {
     deleteData(this.state.idForDeletion, tbl_classifications)
   };
+
+  onUpdate = async (newData) => {
+    try {
+      await storeData(
+        tbl_classifications,
+        newData,
+        'put'
+      )
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+    this.setState({ 
+      isAddEditSingleItemModalOpen: false,
+      itemForUpdate: null
+    })
+  }
 
   async fetchData() {
     const strgClassifications = fetchLocalStorage(tbl_classifications);
@@ -96,8 +121,7 @@ class Classifications extends Component {
     })
   }
 
-  // @ts-ignore
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     window.addEventListener('storage', () => {
       this.setState({
         filteredItems: fetchLocalStorage(tbl_classifications)
@@ -109,16 +133,16 @@ class Classifications extends Component {
     this.fetchData();
   }
 
-  render({ }, { filteredItems, isPromptModalOpen }) {
+  render({ }, { filteredItems, isPromptModalOpen, isAddEditSingleItemModalOpen, itemForUpdate }) {
     return (
-      <div class="container mx-auto">
+      <div>
         <form class="flex items-center justify-end mb-5">
           <div class="mr-3 flex-grow md:flex-grow-0">
             <Search
               data={fetchLocalStorage(tbl_classifications)}
               setSearchResults={this.setSearchResults}
               searchColumns={searchColumns}
-              searchPlaceHolder={`Add ${tbl_classifications} here`}
+              searchPlaceHolder={`Search here`}
               ref={(ref) => (this.searchComponentRef = ref)}
             />
           </div>
@@ -132,6 +156,7 @@ class Classifications extends Component {
             data={filteredItems}
             displayedColumns={displayedColumns}
             onDelete={this.handleDelete}
+            onUpdate={this.handleUpdate}
           />
         </div>
         <PromptModal 
@@ -139,6 +164,20 @@ class Classifications extends Component {
           onClose={() => this.setState({ isPromptModalOpen: false })}
           onYes={this.handleYes}
         />
+        {isAddEditSingleItemModalOpen && 
+         <AddEditSingleItemModal
+            isOpen={isAddEditSingleItemModalOpen}
+            onClose={() => {
+              this.setState({ 
+                isAddEditSingleItemModalOpen: false,
+                itemForUpdate: null
+              })
+            }}
+            dataForEdit={itemForUpdate}
+            onUpdate={this.onUpdate}
+            modalTitle="Update Supplier"
+         />
+        }
       </div>
     )
   }

@@ -1,16 +1,16 @@
 // @ts-nocheck
 import { h, Component } from 'preact';
-import { ButtonDefault } from '../../../components';
+import { ButtonDefault } from '@components';
 import {
   storeData,
   validateForm,
   fetchLocalStorage,
-  fetchDataFromAPI
-} from '../../../../helpers.js';
+  fetchDataFromAPI,
+  tbl_classifications
+} from '@helpers';
 import {
   requiredFields
 } from './data.js'
-import { tbl_classifications } from '../../../helpers/constants.js';
 
 class ItemsModal extends Component {
   constructor() {

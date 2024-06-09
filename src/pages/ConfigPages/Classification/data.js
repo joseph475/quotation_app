@@ -1,7 +1,7 @@
 export const displayedColumns = [
   {
     'column': 'name',
-    'value': 'Classification Name'
+    'value': 'Name'
   }
 ]
 

@@ -1,12 +1,10 @@
 // @ts-nocheck
 import { h, Component } from 'preact';
-import { ButtonDefault } from '../../../components';
+import { ButtonDefault } from '@components';
 import {
   storeData,
-  validateForm,
-  fetchLocalStorage,
-  fetchDataFromAPI
-} from '../../../../helpers.js';
+  validateForm
+} from '@helpers';
 import {
   requiredFields
 } from './data.js'

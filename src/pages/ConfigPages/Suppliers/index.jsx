@@ -202,7 +202,7 @@ class Suppliers extends Component {
 
   render({ }, { filteredItems, isPromptModalOpen, showModal, SuppliersModal }) {
     return (
-      <div class="container mx-auto">
+      <div>
         <form class="flex items-center justify-end mb-5 ">
           <div class="mr-3">
             <Search

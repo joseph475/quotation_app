@@ -43,13 +43,13 @@ class ConfigPages extends Component {
 
   render({ }, { forms, configTabs }) {
     return (
-      <div class="container mx-auto my-4 grid grid-cols-1 xl:grid-cols-4 xl:gap-4 gap-0">
+      <div class="mx-auto my-4 grid grid-cols-1 xl:grid-cols-4 xl:gap-4 gap-0">
         <div class="bg-white rounded-md shadow-md h-fit col-span-4 lg:col-span-1 mb-5">
-          <h2 class="py-4 px-2 text-xl font-bold border-b bg-[#3a9361] text-white">Edit Configs</h2>
-          <ul class="divide-y divide-gray-200 dark:divide-gray-700 p-4 ">
+          <h3 class="py-4 px-3 text-lg font-bold border-b bg-[#3a9361] text-white">Settings</h3>
+          <ul class="divide-y divide-gray-200 dark:divide-gray-700 py-2">
             {configTabs.map((item) => (
               <li
-                class={`p-3 sm:pb-4 cursor-pointer hover:bg-slate-200 rounded-md 
+                class={`px-3 py-2 cursor-pointer hover:bg-slate-200
                 ${forms[item] === true ? 'bg-slate-200 ' : ''}`}
                 onClick={this.handleButtonClick}>
                 <div class="flex items-center space-x-4 rtl:space-x-reverse">
