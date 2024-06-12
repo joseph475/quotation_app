@@ -1,11 +1,13 @@
 // @ts-nocheck
 import { h, Component, render } from 'preact';
+import ReactPaginate from 'react-paginate';
 import {
   ButtonDefault,
   Search,
   PromptModal,
   Loader,
-  Table
+  Table,
+  SuppliersModal
 } from '@components';
 import {
   fetchDataFromAPI,
@@ -16,7 +18,6 @@ import {
   tbl_suppliers
 } from '@helpers';
 import {
-  requiredFields,
   searchColumns,
   itemsPerPage,
   displayedColumns 
@@ -40,26 +41,12 @@ class Suppliers extends Component {
 
   }
 
-  // loadSuppliersModal = async () => {
-  //   const module = await import('../../../components/Modals/AddSuppliersModal');
-  //   const SuppliersModal = module.default;
-
-  //   this.setState({
-  //     SuppliersModal,
-  //   });
-  // };
-
-  // openModal = () => {
-  //   this.setState({ showModal: true });
-  //   this.loadSuppliersModal()
-  // };
-
-  // closeModal = () => {
-  //   this.setState({
-  //     showModal: false,
-  //     isEditing: false
-  //   });
-  // };
+  closeModal = () => {
+    this.setState({
+      showModal: false,
+      isEditing: false
+    });
+  };
 
   setSearchResults = (results, searchQuery) => {
     this.setState({
@@ -84,32 +71,12 @@ class Suppliers extends Component {
     });
   };
 
-  handleSubmit = async () => {
-    const { searchQuery } = this.state;
-    const data = {
-      'name': searchQuery
-    }
-
-    if (validateForm(requiredFields, data)) {
-      try {
-        await storeData(
-          tbl_suppliers,
-          data,
-          'post'
-        )
-        this.handleClearSearch()
-      } catch (error) {
-        console.error('Error:', error.message);
-      }
-    } else {
-      console.log('Form validation failed.');
-    }
-  }
 
   handleUpdate = (item) => {
     this.setState({ 
-      // isAddEditSingleItemModalOpen: true,
-      itemForUpdate: item
+      showModal: true,
+      itemForUpdate: item, 
+      isEditing: true
     })
   }
 
@@ -155,7 +122,8 @@ class Suppliers extends Component {
     isPromptModalOpen, 
     rawData, 
     currentPage, 
-    loading 
+    loading,
+    showModal
   }) {
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -171,8 +139,8 @@ class Suppliers extends Component {
 
     return (
       <div>
-        <form class="flex items-center justify-end mb-5 ">
-          <div class="mr-3">
+        <form class="flex items-center justify-between mb-5">
+          <div class="mr-3 flex-grow md:flex-grow-0">
             <Search
               data={rawData}
               setSearchResults={this.setSearchResults}
@@ -182,93 +150,10 @@ class Suppliers extends Component {
           </div>
           <ButtonDefault
             text="Add Supplier"
-            handleOnClick={this.openModal}
+            handleOnClick={()=>{ this.setState({showModal: true}) }}
           />
-          {/* {SuppliersModal &&
-            <SuppliersModal
-              isOpen={showModal}
-              onClose={this.closeModal}
-              cb={this.closeModal}
-              dataForEdit={this.state.dataForEdit}
-              isEditing={this.state.isEditing}
-            />
-          } */}
         </form>
         <div class="overflow-y-auto max-h-[700px] shadow-md">
-          {/* <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto">
-            <thead class="text-xs text-gray-700 uppercase bg-slate-200 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                {
-                  tableColumns.map((item) => (
-                    <th scope="col" class="px-6 py-3">
-                      <div class="flex items-center">
-                        {item}
-                      </div>
-                    </th>
-                  ))
-                }
-                <th scope="col" class="px-6 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                filteredItems.map((item, index) => (
-                  <tr key={item.id} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 even:bg-slate-50 hover:bg-gray-50 cursor-pointer">
-                    {Object.keys(item)
-                      .filter((colName) => !excludedColumns.includes(colName))
-                      .map((colName) => (
-                        <td
-                          class="px-6 py-3"
-                          key={colName}
-                          onDblClick={() => this.handleDoubleClick(index, colName)}
-                          onKeyDown={this.handleEnterKeyPress}
-                        >
-                          {this.state.editingCell &&
-                            this.state.editingCell.rowIndex === index &&
-                            this.state.editingCell.colName === colName ? (
-                            <input
-                              type="text"
-                              value={item[colName]}
-                              onChange={this.handleChange}
-                              onBlur={() => {
-                                this.onCellUpdate()
-                                this.handleClearSearch()
-                                this.setState({
-                                  editingCell: null
-                                })
-                              }}
-                              onKeyDown={this.handleEnterKeyPress}
-                              ref={(input) => (this.inputRef = input)}
-                              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            />
-                          ) : (
-                            item[colName]
-                          )}
-                        </td>
-                      ))}
-                    <td class="text-center">
-                      <ButtonDefault
-                        text="Edit"
-                        handleOnClick={() => {
-                          this.openModal()
-                          this.setState({
-                            dataForEdit: item,
-                            isEditing: true
-                          })
-                        }}
-                        className="text-green-600 mr-2"
-                      />
-                      <ButtonDefault
-                        text="Delete"
-                        handleOnClick={() => this.handleDelete(item.id)}
-                        className="text-red-600"
-                      />
-                    </td>
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table> */}
           <Table 
             data={currentData}
             displayedColumns={displayedColumns}
@@ -281,6 +166,28 @@ class Suppliers extends Component {
           onClose={() => this.setState({ isPromptModalOpen: false })}
           onYes={this.handleYes}
         />
+
+        <ReactPaginate
+          pageCount={Math.ceil(filteredItems.length / itemsPerPage)}
+          pageRangeDisplayed={5}
+          marginPagesDisplayed={2}
+          onPageChange={(selectedPage) => { 
+            this.setState({ currentPage: selectedPage.selected })
+          }}
+          previousLabel="<"
+          nextLabel=">"
+          containerClassName="pagination"
+          activeClassName="active"
+        />
+
+        { showModal && 
+          <SuppliersModal 
+            onClose={this.closeModal}
+            dataForEdit={this.state.itemForUpdate}
+            isEditing={this.state.isEditing}
+            cb={this.closeModal}
+          /> 
+        }
       </div>
     )
   }

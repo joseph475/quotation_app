@@ -7,11 +7,14 @@ import 'react-toastify/dist/ReactToastify.css';
 const prefetch = () => {
   fetchDataFromAPI('supplier')
   fetchDataFromAPI('classification')
+  fetchDataFromAPI('model_')
+  fetchDataFromAPI('brand')
 }
 
 const fetchDataFromAPI = async (key) => {
+  console.log(key);
   try {
-    await axios.get(getApiEndpoints(`${key}s`))
+    await axios.get(getApiEndpoints(key))
       .then(response => {
         localStorage.setItem(`${key}s`, JSON.stringify(response.data));
         window.dispatchEvent(new Event("storage"));
@@ -89,6 +92,10 @@ const fetchLocalStorage = (key) => {
   }
 }
 
+const setLocalStorage = (key, value) => {
+  localStorage.setItem(key, value);
+}
+
 const validateForm = (fields, data) => {
   const isValid = fields.every((i) => (typeof data === 'string' ? data[i].trim() !== '' : data))
   return isValid;
@@ -106,6 +113,7 @@ export {
   deleteData,
   validateForm,
   fetchLocalStorage,
-  fetchDataFromAPI
+  fetchDataFromAPI,
+  setLocalStorage
   // lazyLoadComponent
 };

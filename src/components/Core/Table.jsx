@@ -12,7 +12,7 @@ class Table extends Component {
 
   render({ data, displayedColumns, style, onUpdate, onDelete }) {
     return (
-      <table class={`${style} min-w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-auto`}>
+      <table class={`${style} min-w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed`}>
         <thead class="text-xs text-white uppercase bg-[#3a9361]">
           <tr>
             {displayedColumns.map((item) => (
@@ -24,32 +24,32 @@ class Table extends Component {
             ))}
             {/* Delete Action*/}
             {(onDelete || onUpdate) && (
-              <th scope="col" class="px-6 py-3 border"></th>
+              <th scope="col" class="px-6 py-3 border md:w-[25%] w-auto"></th>
             )}
           </tr>
         </thead>
         <tbody>
           {
             data.map((item, index) => (
-              <tr key={item.id} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 even:bg-slate-50 hover:bg-gray-50">
+              <tr key={item.id} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50">
                 {Object.keys(item)
                   .filter((colName) => displayedColumns.find((i) => i.column === colName))
                   .map((colName) => (
                     <td
-                      class="px-6 py-3 border"
+                      class="px-6 py-3 border whitespace-nowrap"
                       key={colName}
                     >
                       {item[colName]}
                     </td>
                   ))}
                 {(onUpdate || onDelete) && (
-                  <td class="text-center py-[5px] border md:w-[25%] w-auto">
+                  <td class="text-center py-[5px] flex justify-center">
                     {onUpdate && (
                       <ButtonIcon
                         type="update"
                         handleOnClick={()=>{ onUpdate(item) }}
                         style={{
-                          container: 'border bg-amber-400 rounded-md',
+                          container: 'border bg-amber-400 rounded-md mx-1',
                           icon:'w-[15px] text-white'
                         }}
                       />
@@ -60,7 +60,7 @@ class Table extends Component {
                         type="delete"
                         handleOnClick={()=>{ onDelete(item.id) }}
                         style={{
-                          container: 'border bg-red-500 rounded-md ml-3',
+                          container: 'border bg-red-500 rounded-md mx-1',
                           icon:'w-[15px] text-white'
                         }}
                       />

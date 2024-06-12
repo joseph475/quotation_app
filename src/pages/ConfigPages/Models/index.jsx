@@ -15,7 +15,7 @@ import {
   storeData,
   validateForm,
   deleteData,
-  tbl_classifications
+  tbl_models
 } from '@helpers';
 import {
   requiredFields,
@@ -24,7 +24,7 @@ import {
   itemsPerPage
 } from './data'
 
-class Classifications extends Component {
+class Models extends Component {
   constructor(props) {
     super(props);
 
@@ -51,7 +51,7 @@ class Classifications extends Component {
     if (validateForm(requiredFields, data)) {
       try {
         await storeData(
-          tbl_classifications,
+          tbl_models,
           data,
           'post'
         )
@@ -82,14 +82,14 @@ class Classifications extends Component {
   }
 
   handleYes = () => {
-    deleteData(this.state.idForDeletion, tbl_classifications)
+    deleteData(this.state.idForDeletion, tbl_models)
     this.fetchData()
   };
 
   onUpdate = async (newData) => {
     try {
       await storeData(
-        tbl_classifications,
+        tbl_models,
         newData,
         'put'
       )
@@ -103,18 +103,18 @@ class Classifications extends Component {
   }
 
   async fetchData() {
-    const strgClassifications = fetchLocalStorage(tbl_classifications);
+    const strgModels = fetchLocalStorage(tbl_models);
 
-    if (!strgClassifications) {
-      await fetchDataFromAPI(tbl_classifications).then(() => {
+    if (!strgModels) {
+      await fetchDataFromAPI(tbl_models).then(() => {
         this.setState({
           loading: false 
         });
       });
     }
     this.setState({
-      rawData: fetchLocalStorage(tbl_classifications),
-      filteredItems: fetchLocalStorage(tbl_classifications),
+      rawData: fetchLocalStorage(tbl_models),
+      filteredItems: fetchLocalStorage(tbl_models),
       loading: false
     })
   }
@@ -212,7 +212,7 @@ class Classifications extends Component {
             dataForEdit={itemForUpdate}
             onUpdate={this.onUpdate}
             onAdd={this.handleSubmit}
-            modalTitle={itemForUpdate ? 'Update Category' : 'Add New Item Category'}
+            modalTitle={itemForUpdate ? 'Update Model' : 'Add New Model'}
          />
         }
       </div>
@@ -220,4 +220,4 @@ class Classifications extends Component {
   }
 }
 
-export default Classifications;
+export default Models;

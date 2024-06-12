@@ -1,3 +1,5 @@
 export const tbl_classifications = 'classification'
 export const tbl_items = 'item'
 export const tbl_suppliers = 'supplier'
+export const tbl_models = 'model_'
+export const tbl_brands = 'brand'

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { h, Component, render } from 'preact';
 import { Router, Route, Link } from 'preact-router';
 import Header from './components/Core/Header.jsx';
@@ -5,7 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import './index.css';
 import {
   prefetch
-} from '../helpers.js';
+} from '@helpers';
 
 import Sidebar from './components/Core/Sidebar.jsx';
 import PurchaseOrder from './pages/PurchaseOrder/index.jsx';

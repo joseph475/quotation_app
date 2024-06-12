@@ -16,7 +16,6 @@ class SearchComponent extends Component {
 
   handleSearchChange = (event) => {
     const {data, searchColumns, setSearchResults } = this.props
-
     this.setState({ searchQuery: event.target.value });
 
     const searchTerm = event.target.value.toLowerCase();

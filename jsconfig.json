@@ -15,6 +15,7 @@
 			"react": ["./node_modules/preact/compat/"],
 			"react-dom": ["./node_modules/preact/compat/"],
 			"@components": ["./src/components/*"],
+			"@configPages": ["./src/pages/ConfigPages/*"],
 			"@helpers": ["./src/helpers/*"]
 		}
 	},

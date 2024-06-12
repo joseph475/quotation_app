@@ -1,13 +1,17 @@
+// @ts-nocheck
 import { h, Component } from 'preact';
 import {
   ArrowSmallRightIcon
 } from '@heroicons/react/24/solid'
-// import {
-//   fetchDataFromAPI,
-//   fetchLocalStorage
-// } from '../../../helpers';
-import Classifications from './Classification/index.jsx';
-import Suppliers from './Suppliers/index.jsx';
+import {
+  setLocalStorage
+} from '@helpers';
+import {
+  Classifications,
+  Suppliers,
+  Models,
+  Brands
+} from '@configPages';
 
 class ConfigPages extends Component {
 
@@ -16,20 +20,26 @@ class ConfigPages extends Component {
 
     this.initialData = {
       forms: {
-        'Categories': true,
-        'Suppliers': false,
-        'Company': false,
+        'Categories': false,
+        'Suppliers': true,
+        'Models': false,
+        'Brands': false,
       }
     }
 
     this.state = {
       ...this.initialData,
       configTabs: [
-        'Categories',
         'Suppliers',
-        'Company'
+        'Categories',
+        'Models',
+        'Brands',
       ]
     };
+  }
+
+  componentWillMount = () => {
+
   }
 
   handleButtonClick = (e) => {
@@ -69,6 +79,8 @@ class ConfigPages extends Component {
         <div class="col-span-4 lg:col-span-3">
           {forms.Categories && <Classifications />}
           {forms.Suppliers && <Suppliers />}
+          {forms.Models && <Models />}
+          {forms.Brands && <Brands />}
         </div>
       </div>
     )
